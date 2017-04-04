@@ -1,0 +1,8 @@
+{
+  "name": "hairiamshelly",
+  "description": "First Try.",
+  "repository": "https://github.com/muscleman/hairIamShelly",
+  "logo": "http://node-js-sample.herokuapp.com/node.svg",
+  "keywords": ["node", "express", "static"],
+  "image": "heroku/nodejs"
+}

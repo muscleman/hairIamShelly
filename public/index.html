@@ -1,0 +1,44 @@
+<!doctype html>
+<html ng-app="hiamsApp">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>client profile</title>
+		<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+		<link rel="stylesheet" href="javascripts/bootstrap/css/bootstrap.min.css"><!-- load bootstrap -->
+		<link rel="stylesheet" type="text/css" href="stylesheets/site.css">
+		<script src="javascripts/angular/angular.min.js"></script><!-- load angular -->
+		<script src="javascripts/angular-ui-router/angular-ui-router.min.js"></script>
+		
+
+
+		<link rel='stylesheet' href='javascripts/fullcalendar/fullcalendar.css' />
+	 	<script src='javascripts/jquery/dist/jquery.min.js'></script>
+		<script src='javascripts/moment/moment.min.js'></script>
+		<script src='javascripts/fullcalendar/fullcalendar.js'></script> 
+
+
+		<script src="app.js"></script>
+		<script src="appointmentsService.js"></script>
+		<script src="appointmentsController.js"></script>
+		<script src="clientsService.js"></script>
+		<script src="clientsController.js"></script>
+		<script src="loginController.js"></script>
+		<base href="/">
+	</head>
+	<body>
+		<nav class="navbar navbar-inverse navbar-fixed-top" role="naviation">
+			<div class="navbar-header">
+				<a class="navbar-brand" ui-sref="#">Hair I Am Shelly</a>
+			</div>
+			<ul class="nav navbar-nav">
+		      <li><a ui-sref="home">Home</a></li>
+		      <li><a ui-sref="clients">clients</a></li>
+		      <li><a ui-sref="appointments">appointments</a></li>
+		      <li><a ui-sref="login">login</a></li>
+		    </ul>
+		</nav>
+		<div class="container-fluid">
+			<div ui-view></div>
+		</div>
+	</body>
+</html>
