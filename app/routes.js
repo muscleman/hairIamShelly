@@ -1,6 +1,7 @@
  var Client 			= require('./models/client');
  var Appointment 		= require('./models/appointment');
  var jwt             	= require('jsonwebtoken');
+ var bcrypt				= require('bcryptjs');
  var path            	= require('path');
 
  //var mongoose = require('mongoose');
@@ -48,15 +49,51 @@ module.exports = function(app) {
 	// });
 
 	app.post('/api/authenticate', function(req, res){
-		Client.findOne({email : req.body.email, password: req.body.password}, function(err, client){
+		Client.findOne({email : req.body.email}, function(err, client){
 			if (err) throw err;
 			if (!client){
 				return res.status(401).send({message: 'Authentication failed. User not found.'});
 			} else if (client){
 				//check if password matches
-				if (client.password != req.body.password){
-					return res.status(401).send({message: 'Authentication failed. Wrong password'});
+				//if (client.password != req.body.password){
+				if (!bcrypt.compareSync(req.body.password, client.password)){
+					//return res.status(401).send({message: 'Authentication failed. Wrong password'});
+					res.redirect('/login');
 				} else {
+					//if user is found and password is right
+					var payLoad = {
+						firstName : client.firstName,
+						lastName : client.lastname,
+						_id : client._id
+					};
+					//create a token
+					var token = jwt.sign(payLoad, req.app.settings.superSecret, {
+						expiresIn: 1440 // expires in 24 minutes
+					});
+
+					req.session.token = token;
+					//return the information including token as JSON
+					// return res.status(200).send({
+					// 	token : token
+					// });
+					res.redirect('/home');
+				}
+			}
+		});
+	});
+
+	app.post('/api/register', function(req, res){
+		var client = new Client(req.body);
+		client.password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10));
+		client.save(function(err){
+			if (err){
+				var message = 'bad';
+				if (err.code === 11000){
+					message = 'that email is already taken';
+				}
+				res.send(message);
+			} else {
+
 					//if user is found and password is right
 					var payLoad = {
 						firstName : client.firstName,
@@ -70,31 +107,67 @@ module.exports = function(app) {
 
 
 					//return the information including token as JSON
-					return res.status(200).send({
-						token : token
-					});
-				}
+					// return res.status(200).send({
+					// 	token : token
+					// });
+					req.session.token = token;
+					res.redirect('/home');
 			}
 		});
+
+		// Client.findOne({email : req.body.email}, function(err, client){
+		// 	if (err) throw err;
+		// 	// if (!client){
+		// 	// 	return res.status(401).send({message: 'Authentication failed. User not found.'});
+		// 	// } 
+		// 	// else 
+		// 		if (client){
+		// 		//check if password matches
+		// 		//if (client.password != req.body.password){
+		// 		if (!bcrypt.compareSync(req.body.password, client.password)){
+		// 			return res.status(401).send({message: 'Authentication failed. Wrong password'});
+		// 		} else {
+					// //if user is found and password is right
+					// var payLoad = {
+					// 	firstName : client.firstName,
+					// 	lastName : client.lastname,
+					// 	_id : client._id
+					// };
+					// //create a token
+					// var token = jwt.sign(payLoad, req.app.settings.superSecret, {
+					// 	expiresIn: 1440 // expires in 24 minutes
+					// });
+
+
+					// //return the information including token as JSON
+					// return res.status(200).send({
+					// 	token : token
+					// });
+		// 		}
+		// 	}
+		// });
 	});
 
 
 	function ensureAuthorized(req, res, next){
-		var token = req.body.token || req.query.token || req.headers['x-session-token'];
-		//console.log(token);
+		//var token = req.body.token || req.query.token || req.headers['x-session-token'];
+		var token = req.session.token;
+		console.log(token);
 		if (token){
 			 jwt.verify(token, req.app.settings.superSecret, function(err, decoded){
 				if (err){
-					return res.status(401).send({message: err});
+					//return res.status(401).send({message: err});
+					res.redirect('/login');
 				} else {
 					res.locals.decoded = decoded;
 					next();
 				}
 			});
 		} else {
-			return res.status(401).send({
-				message: 'No Token provided'
-			});
+			// return res.status(401).send({
+			// 	message: 'No Token provided'
+			// });
+			res.redirect('/login');
 		}
 	}
 
@@ -251,6 +324,7 @@ module.exports = function(app) {
 			var newClient = {};
 			if (!client){
 				newClient = new Client(req.body);
+				newClient.password = bcrypt.hashSync('1234', bcrypt.genSaltSync(10));
 				newClient.save(function(err, client){
 					if (err)
 					{

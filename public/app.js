@@ -44,8 +44,7 @@ hiamsApp.factory('AuthHttpResponseInterceptor', ['$q', '$location', 'sessionServ
 		},
 		responseError: function(rejection){
 			if (rejection.status === 401){
-				sessionService.removeItem('hairiamshelly');
-				console.log('Response Error 401', rejection);
+				//console.log('Response Error 401', rejection);
 				$location.path('/login').search('returnUrl', $location.path());
 			}
 			return $q.reject(rejection);
@@ -66,6 +65,16 @@ hiamsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$
 			url: '/login',
 			templateUrl: 'login.html',
 			controller: 'loginController'
+		}).state('logout', {
+			url: '/login',
+			controller: function($scope, $route, session){
+				session.destroy();
+				$route.reload();
+			}
+		}).state('register', {
+			url: '/register',
+			templateUrl: 'register.html',
+			controller: 'registerController'
 		}).state('home',{
 			url: '/home',
 			templateUrl: 'home.html'
