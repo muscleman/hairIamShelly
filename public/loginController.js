@@ -3,18 +3,20 @@ hiamsApp.controller('loginController', ['$scope', '$http', 'sessionService', fun
 	$scope.credentials = {email : '',
 						  password : ''};
 
+	$scope.error = '';
+
 	// when submitting the add form, send the text to the node API
 	$scope.login = function() {
 		$http.post('/api/authenticate', $scope.credentials)
 			.then(function(response) {
 				if (response.status === 200){
-				console.log(response.data);
+				//console.log(response.data);
 				sessionService.setItem('hairiamshelly', response.data);
 				window.location.href = '/home';
 				}
 			})
 			.catch(function(response) {
-				//console.log('Error: ' + response.data);
+				$scope.error = response.data.message;
 				sessionService.removeItem('hairiamshelly');
 			});
 	};
@@ -22,5 +24,5 @@ hiamsApp.controller('loginController', ['$scope', '$http', 'sessionService', fun
 	$scope.register = function(){
 		window.location.href = '/register';
 	};
-	
+
 }]);

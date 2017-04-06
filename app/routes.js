@@ -1,52 +1,10 @@
  var Client 			= require('./models/client');
  var Appointment 		= require('./models/appointment');
  var jwt             	= require('jsonwebtoken');
- var bcrypt				= require('bcryptjs');
  var path            	= require('path');
 
- //var mongoose = require('mongoose');
- // var jwt = require('');
 
 module.exports = function(app) {
-
-	// var auth = function(req, res, next){
-	// 	var token = req.body.token || req.query.token || req.headers['x-access-token'];
-	// 	if (token){
-	// 		jwt.verify(token, req.app.settings.superSecret, function(err, decoded){
-	// 			if (err){
-	// 				return res.json({success: false, message: 'Failed to authenticate token.'});
-	// 			} else {
-	// 				req.decoded = decoded;
-	// 				next();
-	// 			}
-	// 		});
-	// 	} else {
-	// 		return res.status(401).send({
-	// 			success: false,
-	// 			message: 'No Token provided'
-	// 		});
-	// 	}
-	// };
-
-	//route middleware to verify a token
-	// app.use(function(req, res, next){
-	// 	var token = req.body.token || req.query.token || req.headers['x-access-token'];
-	// 	if (token){
-	// 		jwt.verify(token, req.app.settings.superSecret, function(err, decoded){
-	// 			if (err){
-	// 				return res.json({success: false, message: 'Failed to authenticate token.'});
-	// 			} else {
-	// 				req.decoded = decoded;
-	// 				next();
-	// 			}
-	// 		});
-	// 	} else {
-	// 		return res.status(401).send({
-	// 			success: false,
-	// 			message: 'No Token provided'
-	// 		});
-	// 	}
-	// });
 
 	app.post('/api/authenticate', function(req, res){
 		Client.findOne({email : req.body.email}, function(err, client){
@@ -55,43 +13,39 @@ module.exports = function(app) {
 				return res.status(401).send({message: 'Authentication failed. User not found.'});
 			} else if (client){
 				//check if password matches
-				//if (client.password != req.body.password){
-				if (!bcrypt.compareSync(req.body.password, client.password)){
-					//return res.status(401).send({message: 'Authentication failed. Wrong password'});
-					res.redirect('/login');
-				} else {
-					//if user is found and password is right
-					var payLoad = {
-						firstName : client.firstName,
-						lastName : client.lastname,
-						_id : client._id
-					};
-					//create a token
-					var token = jwt.sign(payLoad, req.app.settings.superSecret, {
-						expiresIn: 1440 // expires in 24 minutes
-					});
+				client.comparePassword(req.body.password, function(err, isMatch){
+					if (isMatch && !err){
+						//if user is found and password is right
+						var payLoad = {
+							firstName : client.firstName,
+							lastName : client.lastname,
+							_id : client._id
+						};
+						//create a token
+						var token = jwt.sign(payLoad, req.app.settings.superSecret, {
+							expiresIn: 1440 // expires in 24 minutes
+						});
 
-					req.session.token = token;
-					//return the information including token as JSON
-					// return res.status(200).send({
-					// 	token : token
-					// });
-					res.redirect('/home');
-				}
+						//return the information including token as JSON
+						return res.status(200).send({
+							token : token
+						});
+					} else {
+						return res.status(401).send({message: 'Authentication failed. Wrong password'});
+					}
+				});
 			}
 		});
 	});
 
 	app.post('/api/register', function(req, res){
 		var client = new Client(req.body);
-		client.password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10));
 		client.save(function(err){
 			if (err){
-				var message = 'bad';
 				if (err.code === 11000){
-					message = 'that email is already taken';
+					return res.status(403).send({message: 'Registration failed. That email already taken!'});
 				}
-				res.send(message);
+				return res.status(403).send({message: err.message});
 			} else {
 
 					//if user is found and password is right
@@ -107,67 +61,28 @@ module.exports = function(app) {
 
 
 					//return the information including token as JSON
-					// return res.status(200).send({
-					// 	token : token
-					// });
-					req.session.token = token;
-					res.redirect('/home');
+					return res.status(200).send({token : token});
 			}
 		});
-
-		// Client.findOne({email : req.body.email}, function(err, client){
-		// 	if (err) throw err;
-		// 	// if (!client){
-		// 	// 	return res.status(401).send({message: 'Authentication failed. User not found.'});
-		// 	// } 
-		// 	// else 
-		// 		if (client){
-		// 		//check if password matches
-		// 		//if (client.password != req.body.password){
-		// 		if (!bcrypt.compareSync(req.body.password, client.password)){
-		// 			return res.status(401).send({message: 'Authentication failed. Wrong password'});
-		// 		} else {
-					// //if user is found and password is right
-					// var payLoad = {
-					// 	firstName : client.firstName,
-					// 	lastName : client.lastname,
-					// 	_id : client._id
-					// };
-					// //create a token
-					// var token = jwt.sign(payLoad, req.app.settings.superSecret, {
-					// 	expiresIn: 1440 // expires in 24 minutes
-					// });
-
-
-					// //return the information including token as JSON
-					// return res.status(200).send({
-					// 	token : token
-					// });
-		// 		}
-		// 	}
-		// });
 	});
 
 
 	function ensureAuthorized(req, res, next){
-		//var token = req.body.token || req.query.token || req.headers['x-session-token'];
-		var token = req.session.token;
-		console.log(token);
+		var token = req.body.token || req.query.token || req.headers['x-session-token'];
+		//console.log(token);
 		if (token){
 			 jwt.verify(token, req.app.settings.superSecret, function(err, decoded){
 				if (err){
-					//return res.status(401).send({message: err});
-					res.redirect('/login');
+					return res.status(401).send({message: err});
 				} else {
 					res.locals.decoded = decoded;
 					next();
 				}
 			});
 		} else {
-			// return res.status(401).send({
-			// 	message: 'No Token provided'
-			// });
-			res.redirect('/login');
+			return res.status(401).send({
+				message: 'No Token provided'
+			});
 		}
 	}
 
@@ -183,7 +98,6 @@ module.exports = function(app) {
 			}
 			res.json(appointments); // return all todos in JSON format
 		});
-		//res.send([{title: 'first chop', start: '2017-03-31T10:30:00', end: '2017-03-31T11:30:00'}]);
 	});
 
 	//get all appointments
@@ -258,64 +172,6 @@ module.exports = function(app) {
 			res.json(clients); // return all clients in JSON format
 		});
 	});
-
-	// create client and send back all clients after creation
-	// app.post('/api/clients', ensureAuthorized, function(req, res) {
-
-	// 	// create a client, information comes from AJAX request from Angular
-
-	// 	Client.findOne({_id : req.body._id}, function(err, client ){
-	// 		if (err)
-	// 		{
-	// 			res.send(err);
-	// 		}
-	// 		var newClient = {};
-	// 		if (!client){
-	// 			newClient = new Client(req.body);
-	// 			newClient.save(function(err, client){
-	// 				if (err)
-	// 				{
-	// 					res.send(err);
-	// 				}
-	// 				res.json(client);
-	// 			});
-
-	// 		}
-	// 		else{
-	// 			var updateData = {
-	// 				firstName				: req.body.firstName,
-	// 				lastName				: req.body.lastName,
-	// 				dob						: req.body.dob,
-	// 				date        			: req.body.date,
-	// 				phoneHome				: req.body.phoneHome,
-	// 				phoneWork				: req.body.phoneWork,
-	// 				address					: req.body.address,
-	// 				city					: req.body.city,
-	// 				state					: req.body.state,
-	// 				zip						: req.body.zip,
-	// 				cell					: req.body.cell,
-	// 				email					: req.body.email,
-	// 				occupation				: req.body.occupation,
-	// 				employer				: req.body.employer,
-	// 				preferredAptDay			: req.body.preferredAptDay,
-	// 				time					: req.body.time,
-	// 				allergies				: req.body.allergies,
-	// 				commonHairProducts 		: req.body.commonHairProducts,
-	// 				commonRetailProducts 	: req.body.commonRetailProducts,
-	// 				referred				: req.body.referred,
-	// 				clientRemarks 			: req.body.clientRemarks
-	// 			};
-	// 			Client.update({_id: client._id}, updateData, function(err, affected){
-	// 				if (err)
-	// 				{
-	// 					res.send(err);
-	// 				}
-	// 				res.json(req.body);
-	// 			});				
-	// 		}
-	// 	});
-
-	// });
 
 	app.post('/api/addClient', ensureAuthorized, function(req, res) {
 		Client.findOne({_id: res.locals.decoded._id}, function(err, client){

@@ -8,7 +8,6 @@
     var database        = require('./config/database');
     var path            = require('path');
     
-    var session         = require('client-sessions');
 
     var morgan          = require('morgan');             // log requests to the console (express4)
     var bodyParser      = require('body-parser');    // pull information from HTML POST (express4)
@@ -36,12 +35,7 @@
     // });
 
     app.use(methodOverride());
-    app.use(session({
-        cookieName : 'session',
-        secret : 'asdfqwerty',
-        duration : 30 * 60 * 1000,
-        activeDuration : 5 * 60 * 1000
-    }));
+
 
     // routes ======================================================================
     require('./app/routes.js')(app);

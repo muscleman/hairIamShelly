@@ -1,4 +1,4 @@
-var hiamsApp = angular.module('hiamsApp',['ui.router']);
+var hiamsApp = angular.module('hiamsApp', ['ui.router']);
 
 hiamsApp.factory('sessionService', ['$window', function($window){
 	var localStorage = $window.localStorage;
@@ -67,9 +67,9 @@ hiamsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$
 			controller: 'loginController'
 		}).state('logout', {
 			url: '/login',
-			controller: function($scope, $route, session){
-				session.destroy();
-				$route.reload();
+			controller: function($scope, sessionService){
+				sessionService.removeItem('hairiamshelly');
+				//$route.reload();
 			}
 		}).state('register', {
 			url: '/register',
