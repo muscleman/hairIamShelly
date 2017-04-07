@@ -14,8 +14,13 @@
 					<input type="text" class="text-left client-content"></input></label>
 				</div>
 				<div class="col-xs-6">
-					<label class="client-sub-header">dob
-					<input type="text" class="text-left client-content"></input></label>
+					<p class="input-group">
+						<label class="client-sub-header text-left">dob</label>
+          				<input type="text" class="form-control client-content" uib-datepicker-popup="{{format}}" ng-model="dt" is-open="popup1.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" />
+			          <span class="input-group-btn">
+			            <button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
+			          </span>
+			        </p>
 				</div>
 			</div>
 		</div>
@@ -35,10 +40,19 @@
 
 		<div class="row">
 			<div class="col-xs-12">
-				<div class="col-xs-6">
+				<!--< div class="col-xs-6">
 					<label class="client-sub-header">address
 					<input type="text" class="text-left client-content" ng-model="client.address"></input></label>
-				</div>
+				</div> -->
+
+				<pre>Model: {{asyncSelected | json}}</pre>
+			    <input type="text" ng-model="asyncSelected" placeholder="Locations loaded via $http" uib-typeahead="address for address in getLocation($viewValue)" typeahead-loading="loadingLocations" typeahead-no-results="noResults" class="form-control">
+			    <i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>
+			    <div ng-show="noResults">
+			      <i class="glyphicon glyphicon-remove"></i> No Results Found
+			    </div>
+
+
 				<div class="col-xs-6">
 					<label class="client-sub-header">phone
 					<input type="text" class="text-left client-content" ng-model="client.phoneHome"></input></label>
@@ -152,231 +166,7 @@
 
 		<div class="row text-center" style="margin:1vmin;">
 			<button class="btn btn-primary client-content" type="button" ng-click="updateClient()">Update</button>
-			<button class="btn btn-primary client-content" type="button" ng-click="addClient()">Save</button>
-			<button class="btn btn-primary client-content" type="button" ng-click="deleteClient(client._id)">Delete</button>
 		</div>
 
-	</div>
-
-	<div class="col-xs-12">
-		<div class="row">
-			<div class="col-xs-12 text-center client-header">
-				<label ng-bind="stylistOnly"></label>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-xs-12">
-				<div class="col-xs-6">
-					<label class="client-sub-header">hair condition rating (1-10)
-					<input type="text" class="text-left client-content" ></input></label>
-				</div>
-				<div class="col-xs-6">
-					<label class="client-sub-header">comment
-					<input type="text" class="text-left client-content" ></input></label>
-				</div>
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="col-xs-12">
-				<div class="col-xs-6">
-					<label class="client-sub-header">scalp condition rating (1-10)
-					<input type="text" class="text-left client-content" ></input></label>
-				</div>
-				<div class="col-xs-6">
-					<label class="client-sub-header">comment
-					<input type="text" class="text-left client-content" ></input></label>
-				</div>
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="col-xs-12">
-				<label class="client-sub-header">preferred cut/style
-				<input type="text" class="text-left client-content" ></input></label>
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="col-xs-12">
-				<div class="col-xs-3">
-					<label class="client-sub-header">porosity:</label>
-				</div>
-				<div class="col-xs-3">
-					<label class="client-sub-header">extra porous
-					<input type="checkbox" class="text-left client-content" ></input></label>
-				</div>
-				<div class="col-xs-3">
-					<label class="client-sub-header">porous
-					<input type="checkbox" class="text-left client-content" ></input></label>
-				</div>
-				<div class="col-xs-3">
-					<label class="client-sub-header">normal
-					<input type="checkbox" class="text-left client-content" ></input></label>
-				</div>
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="col-xs-12">
-				<div class="col-xs-3">
-					<label class="client-sub-header">hair texture:</label>
-				</div>
-				<div class="col-xs-3">
-					<label class="client-sub-header">coarse
-					<input type="checkbox" class="text-left client-content" ></input></label>
-				</div>
-				<div class="col-xs-3">
-					<label class="client-sub-header">medium
-					<input type="checkbox" class="text-left client-content" ></input></label>
-				</div>
-				<div class="col-xs-3">
-					<label class="client-sub-header">fine
-					<input type="checkbox" class="text-left client-content" ></input></label>
-				</div>
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="col-xs-12">
-				<div class="col-xs-3">
-					<label class="client-sub-header">color treatments:</label>
-				</div>
-				<div class="col-xs-3">
-					<label class="client-sub-header">permanent
-					<input type="checkbox" class="text-left client-content" ></input></label>
-				</div>
-				<div class="col-xs-3">
-					<label class="client-sub-header">semi-permanent
-					<input type="checkbox" class="text-left client-content" ></input></label>
-				</div>
-				<div class="col-xs-3">
-					<label class="client-sub-header">toned
-					<input type="checkbox" class="text-left client-content" ></input></label>
-				</div>
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="col-xs-12">
-				<div class="col-xs-3">&nbsp;
-				</div>
-				<div class="col-xs-3">
-					<label class="client-sub-header">highlights
-					<input type="checkbox" class="text-left client-content" ></input></label>
-				</div>
-				<div class="col-xs-3">
-					<label class="client-sub-header">lowlights
-					<input type="checkbox" class="text-left client-content" ></input></label>
-				</div>
-				<div class="col-xs-3">
-					<label class="client-sub-header">bleached
-					<input type="checkbox" class="text-left client-content" ></input></label>
-				</div>
-				<div class="col-xs-3">&nbsp;
-				</div>
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="col-xs-12">
-				<div class="col-xs-3">&nbsp;
-				</div>
-				<div class="col-xs-3">
-					<label class="client-sub-header">henna base
-					<input type="checkbox" class="text-left client-content" ></input></label>
-				</div>
-				<div class="col-xs-3">
-					<label class="client-sub-header">
-					<input type="checkbox" class="text-left client-content" ></input></label>
-				</div>
-				<div class="col-xs-3">&nbsp;
-				</div>
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="col-xs-12">
-				<div class="col-xs-3">
-					<label class="client-sub-header">perms:</label>
-				</div>
-				<div class="col-xs-3">
-					<label class="client-sub-header">exothermic
-					<input type="checkbox" class="text-left client-content" ></input></label>
-				</div>
-				<div class="col-xs-3">
-					<label class="client-sub-header">acid
-					<input type="checkbox" class="text-left client-content" ></input></label>
-				</div>
-				<div class="col-xs-3">
-					<label class="client-sub-header">alkaline
-					<input type="checkbox" class="text-left client-content" ></input></label>
-				</div>
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="col-xs-12">
-				<div class="col-xs-3">
-					<label class="client-sub-header">relaxer
-					<input type="text" class="text-left client-content" ></input></label>
-				</div>
-				<div class="col-xs-3">
-					<label class="client-sub-header">formula
-					<input type="text" class="text-left client-content" ></input></label>
-				</div>
-				<div class="col-xs-2">
-					<label class="client-sub-header">mild
-					<input type="checkbox" class="text-left client-content" ></input></label>
-				</div>
-				<div class="col-xs-2">
-					<label class="client-sub-header">regular
-					<input type="checkbox" class="text-left client-content" ></input></label>
-				</div>
-				<div class="col-xs-2">
-					<label class="client-sub-header">super
-					<input type="checkbox" class="text-left client-content" ></input></label>
-				</div>
-			</div>
-		</div>
-
-
-		<div class="row">
-			<div class="col-xs-12">
-				<div class="col-xs-3">
-					<label class="client-sub-header">product
-					<input type="text" class="text-left client-content" ></input></label>
-				</div>
-				<div class="col-xs-3">
-					<label class="client-sub-header">oz.
-					<input type="text" class="text-left client-content" ></input></label>
-				</div>
-				<div class="col-xs-3">
-					<label class="client-sub-header">color
-					<input type="text" class="text-left client-content" ></input></label>
-				</div>
-				<div class="col-xs-3">
-					<label class="client-sub-header">lift time
-					<input type="text" class="text-left client-content" ></input></label>
-				</div>
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="col-xs-12">
-				<label class="client-sub-header">comments
-				<input type="text" class="text-left client-content" ></input></label>
-			</div>
-		</div>
-
-
-	</div>
-
-	<div class="col-xs-12">
-		<div class="row">
-			<div class="col-xs-12 text-center client-header">
-				<label ng-bind="clientHistory"></label>
-			</div>
-		</div>
 	</div>
 </div>

@@ -68,8 +68,9 @@ module.exports = function(app) {
 
 
 	function ensureAuthorized(req, res, next){
-		var token = req.body.token || req.query.token || req.headers['x-session-token'];
-		//console.log(token);
+		//var token = req.body.token || req.query.token || req.headers['x-session-token'];
+		var token = req.headers.Authorization;
+		console.log(token);
 		if (token){
 			 jwt.verify(token, req.app.settings.superSecret, function(err, decoded){
 				if (err){
@@ -173,6 +174,17 @@ module.exports = function(app) {
 		});
 	});
 
+	app.get('/api/readClient', ensureAuthorized,  function(req, res) {
+		// use mongoose to get all clients in the database
+		Client.findOne({_id: res.locals.decoded._id}, function(err, client) {
+			if (err)
+			{
+				res.send(err);
+			}
+			res.json(client); // return all clients in JSON format
+		});
+	});
+
 	app.post('/api/addClient', ensureAuthorized, function(req, res) {
 		Client.findOne({_id: res.locals.decoded._id}, function(err, client){
 			if (err)
@@ -224,23 +236,6 @@ module.exports = function(app) {
 				res.send(err);
 			res.json(req.body);
 		}));
-	});
-
-	// delete a todo
-	app.delete('/api/clients/:client_id', ensureAuthorized, function(req, res) {
-		Client.remove({
-			_id : req.params.client_id
-		}, function(err, client) {
-			if (err)
-				res.send(err);
-
-			// get and return all the clients after you create another
-			Client.find(function(err, clients) {
-				if (err)
-					res.send(err);
-				res.json(clients);
-			});
-		});
 	});
 
 	app.post('/api/deleteClient', ensureAuthorized, function(req, res) {

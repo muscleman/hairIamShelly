@@ -9,7 +9,7 @@ hiamsApp.service('clientsService', ['$http', function ($http) {
 	};
 
 	var readClient = function(){
-		return null;
+		return $http.get('/api/readClient');
 	};
 
 	var readClients = function(){

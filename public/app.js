@@ -18,14 +18,34 @@ hiamsApp.factory('sessionService', ['$window', function($window){
 	return sessionService;
 }]);
 
+// hiamsApp.factory('sessionInjector', ['sessionService', function(sessionService) {  
+//     var sessionInjector = {
+//         request: function(config) {
+//         	if (config.url != '//maps.googleapis.com/maps/api/geocode/json'){
+// 	        	console.log(config.url);
+// 	        	var token = {};
+// 	        	if (sessionService.getItem('hairiamshelly') !== null)
+// 	        	{
+// 	        		token = sessionService.getItem('hairiamshelly').token;
+// 	        	    config.headers['x-session-token'] = token;
+// 	        	}
+// 	        }
+//             return config;
+//         }
+//     };
+//     return sessionInjector;
+// }]);
+
+
 hiamsApp.factory('sessionInjector', ['sessionService', function(sessionService) {  
     var sessionInjector = {
         request: function(config) {
-        	var token = {};
-        	if (sessionService.getItem('hairiamshelly') !== null)
-        	{
-        		token = sessionService.getItem('hairiamshelly').token;
-        	    config.headers['x-session-token'] = token;
+        	console.log(config.headers);
+        	if (config.headers.Authorization === 'Bearer'){
+        		if (sessionService.getItem('hairiamshelly') !== null)
+	        	{
+        			config.headers.Authorization = 'Bearer ' + sessionService.getItem('hairiamshelly').token;
+        		}
         	}
             return config;
         }
@@ -82,6 +102,10 @@ hiamsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$
 			url: '/clients',
 			templateUrl: 'clients.html',
 			controller: 'clientsController'
+		}).state('profile', {
+			url: '/profile',
+			templateUrl: 'profile.html',
+			controller: 'profileController'
 		}).state('appointments', {
 			url: '/appointments',
 			templateUrl: 'appointments.html',
@@ -94,5 +118,24 @@ hiamsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$
 }]);
 
 
-
+// angular.module('app', ['ngResource']).
+//   factory('resourceInterceptor', function() {
+//     return {
+//       response: function(response) {
+//         console.log('response intercepted: ', response);
+//       }
+//     }
+//   }).
+//   factory('resourceService', ['$resource', 'resourceInterceptor', function($resource, resourceInterceptor) {
+//     return $resource(":name", 
+//         {}, 
+//         {
+//             'list': {method: 'GET', isArray: false, interceptor: resourceInterceptor}
+//         }
+//     );
+//   }]).
+//   run(['resourceService', '$http', function(resourceService, $http) {
+//     resourceService.list({name: 'list.json'}); // <= intercepted
+//     $http.get('list.json'); // <= not intercepted
+//   }]);
 
