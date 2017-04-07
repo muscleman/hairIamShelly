@@ -101,21 +101,10 @@ hiamsApp.controller('profileController', ['$scope', '$http', 'clientsService', f
 			}	
 		})
 		.catch(function(response){
-			console.log('Error: ' + response);
+			console.log('Error: ' + response.data);
 		});
 	};
 
-// var address = '11099 County Rd 657';
-
-// $scope.getLocation = function(val) {
-//     	return $http.get('https://maps.googleapis.com/maps/api/geocode/json?address=' + 
-//             address + '&key=AIzaSyBZVOSPh0Z4mv9jljJWzZNSug6upuec7Sg'
-//     	).then(function(response){
-//       		return response.data.results.map(function(item){
-//        			 return item.formatted_address;
-//       			});
-//     		});
-//   };
 
 	$scope.getLocation = function(val) {
     	return $http.get('//maps.googleapis.com/maps/api/geocode/json', {
@@ -125,18 +114,21 @@ hiamsApp.controller('profileController', ['$scope', '$http', 'clientsService', f
 			}
     	}).then(function(response){
       		return response.data.results.map(function(item){
+      			//console.log(item.address_components);
+      			 //$scope.address_component = item.address_components;
+      			 $scope.client.city = item.address_components[2].long_name;
        			 return item.formatted_address;
       			});
     		});
-  };
+  	};
 
-  $scope.modelOptions = {
-    debounce: {
-      default: 500,
-      blur: 250
-    },
-    getterSetter: true
-  };
+	$scope.modelOptions = {
+		debounce: {
+  			default: 500,
+	  		blur: 250
+		},
+		getterSetter: true
+	};
 
 
 	// // when submitting the add form, send the text to the node API

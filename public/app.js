@@ -40,13 +40,12 @@ hiamsApp.factory('sessionService', ['$window', function($window){
 hiamsApp.factory('sessionInjector', ['sessionService', function(sessionService) {  
     var sessionInjector = {
         request: function(config) {
-        	console.log(config.headers);
-        	if (config.headers.Authorization === 'Bearer'){
-        		if (sessionService.getItem('hairiamshelly') !== null)
-	        	{
-        			config.headers.Authorization = 'Bearer ' + sessionService.getItem('hairiamshelly').token;
-        		}
-        	}
+        	if (config.url != '//maps.googleapis.com/maps/api/geocode/json'){
+    			if (sessionService.getItem('hairiamshelly') !== null)
+        		{
+    				config.headers.Authorization = 'Bearer ' + sessionService.getItem('hairiamshelly').token;
+    			}
+    		}
             return config;
         }
     };

@@ -68,9 +68,7 @@ module.exports = function(app) {
 
 
 	function ensureAuthorized(req, res, next){
-		//var token = req.body.token || req.query.token || req.headers['x-session-token'];
-		var token = req.headers.Authorization;
-		console.log(token);
+		var token = req.headers.authorization.replace('Bearer ', '');
 		if (token){
 			 jwt.verify(token, req.app.settings.superSecret, function(err, decoded){
 				if (err){
