@@ -5,10 +5,10 @@ var mongoose = require('mongoose'),
 
 var appointmentSchema = Schema({
 	date 				: Date,
-	title				: String,
+	title				: {type: String, required: true},
 	allDay				: Boolean,
-	start				: Date,
-	end  				: Date,
+	start				: {type: Date, required: true},
+	end  				: {type: Date, required: true},
 	editable			: {type: Boolean, default: true},
 	startEditable		: {type: Boolean, default: true},
 	durationEditable	: {type: Boolean, default: true},

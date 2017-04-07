@@ -1,4 +1,4 @@
-var hiamsApp = angular.module('hiamsApp', ['ui.router']);
+var hiamsApp = angular.module('hiamsApp', ['ui.router', 'ui.bootstrap']);
 
 hiamsApp.factory('sessionService', ['$window', function($window){
 	var localStorage = $window.localStorage;

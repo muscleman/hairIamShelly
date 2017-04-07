@@ -1,34 +1,46 @@
-hiamsApp.controller('appointmentsController', ['$scope', '$compile', 'appointmentsService', function ($scope, $compile, appointmentsService) {
+hiamsApp.controller('appointmentsController', ['$scope', '$compile', '$uibModal', '$log', 'appointmentsService', function ($scope, $compile, $uibModal, $log, appointmentsService) {
 
 
-    // $scope.events = [
-    //   {title: 'All Day Event',start: new Date('Thu Oct 17 2013 09:00:00 GMT+0530 (IST)')},
-    //   {title: 'Long Event',start: new Date('Thu Oct 17 2013 10:00:00 GMT+0530 (IST)'),end: new Date('Thu Oct 17 2013 17:00:00 GMT+0530 (IST)')},
-    //   {id: 999,title: 'Repeating Event',start: new Date('Thu Oct 17 2013 09:00:00 GMT+0530 (IST)'),allDay: false},
-    //   {id: 999,title: 'Repeating Event',start: new Date(y, m, d + 4, 16, 0),allDay: false},
-    //   {title: 'Birthday Party',start: new Date(y, m, d + 1, 19, 0),end: new Date(y, m, d + 1, 22, 30),allDay: false},
-    //   {title: 'Click for Google',start: new Date(y, m, 28),end: new Date(y, m, 29),url: 'http://google.com/'}
-    // ];
+  $scope.open = function (event) {
 
-    //$scope.events = [{title: 'first chop', start: '2017-03-31T10:30:00', end: '2017-03-31T11:30:00'}];
+    var modalInstance = $uibModal.open({
+      animation: true,
+      templateUrl: 'myModalContent.html',
+      controller: 'ModalInstanceCtrl',
+      // size: size,
+      resolve: {
+        event: function () {
+          return event;
+        }
+      }
+    });
 
+    modalInstance.result.then(function (event) {
+        if (event.success){
+           appointmentsService.addAppointment(event)
+               .then(function(response){
+                  console.log(response.data);
+                  addCalendarEvent(response.data);
+               })
+               .catch(function(response){
+                  console.log(response);
+               });
+            
+        }
+    }, function () {
+      $log.info('Modal dismissed at: ' + new Date());
+    });
+  };
 
-    // var e = function(start, end, timezone, callback){
-    //     var events = [{title: 'first chop', start: '2017-03-31T10:30:00', end: '2017-03-31T11:30:00'}];
-    //     callback(events);
-    // };
-
-    // $scope.eventSources = [$scope.events];
-
-
-// ('#calendar').fullCalendar(uiConfig);
+  $scope.toggleAnimation = function () {
+    $scope.animationsEnabled = !$scope.animationsEnabled;
+  };
 
 function addCalendarEvent(eventObject){
     $('#calendar').fullCalendar('renderEvent', eventObject, true);
 }
 
 var removeCalendarEvent = function(event){
-    //alert('removed');
     $('#calendar').fullCalendar('removeEvents', event._id);
 };
 
@@ -38,6 +50,7 @@ $('#calendar').fullCalendar({
         header: {
 				left: 'prev,next today',
 				center: 'title',
+        theme: true,
 				right: 'month,agendaWeek,agendaDay'},
         hiddenDays: [0,1],
         businessHours: [{dow:[2,3,4,5], start: '09:00', end: '19:00'}, {dow:[6], start: '09:30', end: '13:00'}],
@@ -47,22 +60,7 @@ $('#calendar').fullCalendar({
         events: appointmentsService.readAppointments,
         selectable: true,
         select: function(start, end, allDay){
-            var title = prompt('Event Title:');
-            if (title){
-                var event = {start : start,
-                             end   : end,
-                             title : title};
-                 console.log('select');
-                 appointmentsService.addAppointment(event)
-                     .then(function(response){
-                        console.log(response.data);
-                        addCalendarEvent(response.data);
-                     })
-                     .catch(function(response){
-                        console.log(response);
-                     });
-                
-            }
+            $scope.open({start: start, end: end, title : 'My Appointment', success: false});
         },
         eventDrop: function(event, delta, revertFunc){
                             console.log('eventDrop');
@@ -78,9 +76,8 @@ $('#calendar').fullCalendar({
                                     revertFunc();
                                 });
                         },
-        eventClick: function(event, jsEvent, view){
-            //alert(event._id);
-        },
+        // eventClick: function(event, jsEvent, view){
+        // },
         eventResize: function(event, delta, revertFunc){
                             var resizedEvent = {_id : event._id,
                                                 start : event.start.format(),
@@ -99,7 +96,7 @@ $('#calendar').fullCalendar({
                                 });
         },
         slotMinutes: '00:15:00',
-        snapDuration: '00:15:00',
+        snapDuration: '00:30:00',
         slotLabelInterval: '00:15:00',
         displayEventEnd: true,
         viewSubSlotLabel:true,
@@ -118,6 +115,29 @@ $('#calendar').fullCalendar({
            });
          }
 });
+
+$(document).ready(function() {
+  var bottomDifference = $('#container')[0].getBoundingClientRect().bottom - $('.fc-slats')[0].getBoundingClientRect().bottom;
+  var currentHeight = $( ".fc-slats > table" ).css( "height");
+  console.log("Current: ", currentHeight);
+  console.log("Bottom: ", bottomDifference);
+  var newHeight = parseInt(currentHeight) + bottomDifference;
+   $( ".fc-slats > table" ).css( "height", newHeight );
+});
 	
 }]);
+
+hiamsApp.controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, event) {
+
+  $scope.event = event;
+
+  $scope.ok = function () {
+    $scope.event.success = true;
+    $uibModalInstance.close($scope.event);
+  };
+
+  $scope.cancel = function () {
+    $uibModalInstance.dismiss('cancel');
+  };
+});
 
