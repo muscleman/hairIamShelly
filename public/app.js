@@ -1,4 +1,4 @@
-var hiamsApp = angular.module('hiamsApp', ['ui.router', 'ui.bootstrap']);
+var hiamsApp = angular.module('hiamsApp', ['ui.router', 'ui.bootstrap', 'ngResource']);
 
 hiamsApp.factory('sessionService', ['$window', function($window){
 	var localStorage = $window.localStorage;
@@ -35,6 +35,40 @@ hiamsApp.factory('sessionService', ['$window', function($window){
 //     };
 //     return sessionInjector;
 // }]);
+
+hiamsApp.factory('OAuthInterceptor', ['$q', '$location', 'sessionService', function($q, $location, sessionService){
+	return {
+		response: function(response){
+			if (response.status === 401){
+				console.log('response 401');
+			}
+			return response || $q.when(response);
+		},
+		responseError: function(response){
+			if (response.status === 401){
+				//console.log('Response Error 401', response);
+				$location.path('/login').search('returnUrl', $location.path());
+			}
+			return $q.reject(response);
+		},
+		request: function(config) {
+			if (sessionService.getItem('hairiamshelly') !== null)
+    		{
+				config.headers.Authorization = 'Bearer ' + sessionService.getItem('hairiamshelly').token;
+			}
+            return config;
+        }
+	};
+}]);
+
+hiamsApp.factory('resourceService', ['$resource', 'OAuthInterceptor', function($resource, OAuthInterceptor){
+	return $resource(':name', 
+		{},
+		{
+			'list': {url: '/api/authenticate', method: 'POST', isArray: false, interceptor: OAuthInterceptor}
+		}
+	);
+}]);
 
 
 hiamsApp.factory('sessionInjector', ['sessionService', function(sessionService) {  
