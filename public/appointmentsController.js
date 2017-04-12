@@ -105,7 +105,7 @@ $('#calendar').fullCalendar({
         contentHeight: 'auto',
         eventRender: function(event, element) { 
            element.find(".fc-bg").css("pointer-events","none");
-           var newElement = "<div id='events-layer' class='fc-transparent' style='position:absolute;top:-1px;right:0em; z-index:100' ><button type='button' id='btnDeleteEvent' class='btn btn-block btn-primary btn-flat'>X</button></div>";
+           var newElement = "<div id='events-layer' class='fc-transparent' style='position:absolute;top:-1px;right:0em;height:1em;z-index:100' ><button type='button' id='btnDeleteEvent' class='btn btn-block btn-primary btn-flat glyphicon glyphicon-remove-sign'></button></div>";
            element.append(newElement);
            
            element.find("#btnDeleteEvent").click(function(){
