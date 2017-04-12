@@ -57,7 +57,12 @@ $('#calendar').fullCalendar({
         defaultView: 'agendaDay',
         editable: true,
         eventStartEditable: true,
-        events: appointmentsService.readAppointments,
+        // events: appointmentsService.readAppointments,
+        events: function(start, end, timezone, callback){
+                  appointmentsService.list().$promise.then(function(response) {
+                  callback(response.data);
+                });
+              },
         selectable: true,
         select: function(start, end, allDay){
             $scope.open({start: start, end: end, title : 'My Appointment', success: false});
