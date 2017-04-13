@@ -17,33 +17,13 @@ hiamsApp.controller('appointmentsController', ['$scope', '$compile', '$uibModal'
 
     modalInstance.result.then(function (event) {
         if (event.success){
-          // var appointment = new appointmentsService();
-          //  appointment.event = event;
-          //  appointment.$save();//.then(function(response){
-          //     console.log(event);
-          //     addCalendarEvent(event);
-
-          appointmentsService.save(event, function(){
+          appointmentsService.save(event).$promise.then(function(response){
             console.log('SAVED');
-            addCalendarEvent(event);
-          });
-
-
-
-           // })
-           // .catch(function(response){
-           //    console.log(response);
-           // });
-           //addCalendarEvent(appointment.event);
-           //appointmentsService.save(event)
-               // .then(function(response){
-                  // console.log(response.data);
-                  // addCalendarEvent(response.data);
-               // })
-               // .catch(function(response){
-                  // console.log(response);
-               // });
-            
+            addCalendarEvent(response);
+          })
+          .catch(function(response){
+            console.log('NOT SAVED');
+          });            
         }
     }, function () {
       $log.info('Modal dismissed at: ' + new Date());
@@ -84,6 +64,9 @@ $('#calendar').fullCalendar({
         events: function(start, end, timezone, callback){
                   appointmentsService.query().$promise.then(function(response) {
                   callback(response);
+                })
+                .catch(function(response){
+                  console.log('LOAD FAILED');
                 });
               },
         selectable: true,
@@ -110,8 +93,12 @@ $('#calendar').fullCalendar({
                                 start : event.start.format(),
                                 end   : event.end.format(),
                                 title : event.title};
-                                appointmentsService.update(resizedEvent, function(){
+                                appointmentsService.update(resizedEvent).$promise.then(function(){
                                   console.log('RESIZED');
+                                })
+                                .catch(function(response){
+                                  console.log('FAILED RESIZE');
+                                  revertFunc();
                                 });
                             // appointmentsService.$save(resizedEvent)
                             //     .$promise(function(response){   
@@ -145,8 +132,12 @@ $('#calendar').fullCalendar({
                                                 start : event.start.format(),
                                                 end   : event.end.format(),
                                                 title : event.title};
-                            appointmentsService.update(resizedEvent, function(){
+                            appointmentsService.update(resizedEvent).$promise.then(function(){
                               console.log('UPDATED');
+                            })
+                            .catch(function(response){
+                              console.log('FAILED UPDATE');
+                              revertFunc();
                             });
 
                                 // .then(function(response){ 
@@ -175,9 +166,12 @@ $('#calendar').fullCalendar({
            element.append(newElement);
            
            element.find("#btnDeleteEvent").click(function(){
-                appointmentsService.delete({_id: event._id}, function(){
+                appointmentsService.delete({_id: event._id}).$promise.then(function(){
                   console.log('DELETED');
                   removeCalendarEvent(event);
+                })
+                .catch(function(response){
+                  console.log('FAILED DELETE');
                 });
                 
                 // appointmentsService.deleteAppointment({_id: event._id}).then(function(response){
