@@ -87,7 +87,7 @@ module.exports = function(app) {
 
 	// api ---------------------------------------------------------------------
 	// get all appointments
-	app.post('/api/appointments', ensureAuthorized, function(req, res) {
+	app.get('/api/appointment', ensureAuthorized, function(req, res) {
 		// use mongoose to get all clients in the database
 		Appointment.find(function(err, appointments) {
 			if (err)
@@ -95,12 +95,50 @@ module.exports = function(app) {
 				console.log(err);
 				res.send(err);
 			}
+			//console.log(appointments);
 			res.json(appointments); // return all todos in JSON format
 		});
 	});
+	// app.post('/api/appointments', ensureAuthorized, function(req, res) {
+	// 	// use mongoose to get all clients in the database
+	// 	Appointment.find(function(err, appointments) {
+	// 		if (err)
+	// 		{
+	// 			console.log(err);
+	// 			res.send(err);
+	// 		}
+	// 		res.json(appointments); // return all todos in JSON format
+	// 	});
+	// });
 
-	//get all appointments
-	app.post('/api/addAppointment', ensureAuthorized, function(req, res) {
+
+	// app.post('/api/addAppointment', ensureAuthorized, function(req, res) {
+	// 	Client.findOne({_id: res.locals.decoded._id}, function(err, client){
+	// 		if (err)
+	// 			res.send(err);
+	// 		if (client){
+	// 			if (Appointment.findOne({_id: req.body._id}, function(err, appointment){
+	// 				if (err)
+	// 					res.send(err);
+	// 				if (!appointment){
+	// 					var newAppointment = new Appointment(req.body);
+	// 					newAppointment.backgroundColor = 'green';
+	// 					client.appointments.push(newAppointment);
+	// 					newAppointment.save(function(err, appointment){
+	// 						if (err)
+	// 							res.send(err);
+	// 						res.json(appointment);
+	// 					});
+	// 				}
+	// 			}));
+	// 		}
+	// 	});
+	// });
+
+	// add new appointment
+	app.post('/api/appointment', ensureAuthorized, function(req, res) {
+		// console.log(res.locals.decoded._id);
+		// console.log(req.body);
 		Client.findOne({_id: res.locals.decoded._id}, function(err, client){
 			if (err)
 				res.send(err);
@@ -123,7 +161,30 @@ module.exports = function(app) {
 		});
 	});
 
-	app.post('/api/updateAppointment', ensureAuthorized, function(req, res) {
+	// app.post('/api/updateAppointment', ensureAuthorized, function(req, res) {
+	// 	Client.findOne({_id: res.locals.decoded._id}, function(err, client){
+	// 		if (err)
+	// 			res.send(err);
+	// 		if (client){
+	// 				var updateData = {
+	// 							title		: req.body.title,
+	// 							start		: req.body.start,
+	// 							end  		: req.body.end,
+	// 							backgroundColor : 'blue'
+	// 						};
+	// 				if (Appointment.findOneAndUpdate({_id: req.body._id}, {$set: updateData}, function(err, appointment){
+	// 					if (err)
+	// 						res.send(err);
+	// 					res.json(appointment);
+	// 				}));
+
+	// 		}
+	// 	});
+	// });
+
+
+	//update existing appointment
+	app.put('/api/appointment', ensureAuthorized, function(req, res) {
 		Client.findOne({_id: res.locals.decoded._id}, function(err, client){
 			if (err)
 				res.send(err);
@@ -144,12 +205,28 @@ module.exports = function(app) {
 		});
 	});
 
-	app.post('/api/deleteAppointment', ensureAuthorized, function(req, res) {
+	// app.post('/api/deleteAppointment', ensureAuthorized, function(req, res) {
+	// 	Client.findOne({_id: res.locals.decoded._id}, function(err, client){
+	// 		if (err)
+	// 			res.send(err);
+	// 		if (client){
+	// 			if (Appointment.remove({_id: req.body._id}, function(err, appointment){
+	// 				if (err)
+	// 					res.send(err);
+	// 				res.send(appointment);
+	// 			}));
+	// 		}
+	// 	});
+	// });
+
+	//delete appointment
+	app.delete('/api/appointment', ensureAuthorized, function(req, res) {
+		// console.log(req.query._id);
 		Client.findOne({_id: res.locals.decoded._id}, function(err, client){
 			if (err)
 				res.send(err);
 			if (client){
-				if (Appointment.remove({_id: req.body._id}, function(err, appointment){
+				if (Appointment.remove({_id: req.query._id}, function(err, appointment){
 					if (err)
 						res.send(err);
 					res.send(appointment);

@@ -17,14 +17,32 @@ hiamsApp.controller('appointmentsController', ['$scope', '$compile', '$uibModal'
 
     modalInstance.result.then(function (event) {
         if (event.success){
-           appointmentsService.addAppointment(event)
-               .then(function(response){
-                  console.log(response.data);
-                  addCalendarEvent(response.data);
-               })
-               .catch(function(response){
-                  console.log(response);
-               });
+          // var appointment = new appointmentsService();
+          //  appointment.event = event;
+          //  appointment.$save();//.then(function(response){
+          //     console.log(event);
+          //     addCalendarEvent(event);
+
+          appointmentsService.save(event, function(){
+            console.log('SAVED');
+            addCalendarEvent(event);
+          });
+
+
+
+           // })
+           // .catch(function(response){
+           //    console.log(response);
+           // });
+           //addCalendarEvent(appointment.event);
+           //appointmentsService.save(event)
+               // .then(function(response){
+                  // console.log(response.data);
+                  // addCalendarEvent(response.data);
+               // })
+               // .catch(function(response){
+                  // console.log(response);
+               // });
             
         }
     }, function () {
@@ -58,47 +76,89 @@ $('#calendar').fullCalendar({
         editable: true,
         eventStartEditable: true,
         // events: appointmentsService.readAppointments,
+        // events: function(start, end, timezone, callback){
+        //           appointmentsService.list().$promise.then(function(response) {
+        //           callback(response.data);
+        //         });
+        //       },
         events: function(start, end, timezone, callback){
-                  appointmentsService.list().$promise.then(function(response) {
-                  callback(response.data);
+                  appointmentsService.query().$promise.then(function(response) {
+                  callback(response);
                 });
               },
         selectable: true,
         select: function(start, end, allDay){
             $scope.open({start: start, end: end, title : 'My Appointment', success: false});
         },
+        // eventDrop: function(event, delta, revertFunc){
+        //                     console.log('eventDrop');
+        //                     var resizedEvent = {_id : event._id,
+        //                         start : event.start.format(),
+        //                         end   : event.end.format(),
+        //                         title : event.title};
+        //                     appointmentsService.addAppointment(resizedEvent)
+        //                         .then(function(response){   
+        //                             console.log(response.data); 
+        //                         })
+        //                         .catch(function(response){
+        //                             revertFunc();
+        //                         });
+        //                 },
         eventDrop: function(event, delta, revertFunc){
                             console.log('eventDrop');
                             var resizedEvent = {_id : event._id,
                                 start : event.start.format(),
                                 end   : event.end.format(),
                                 title : event.title};
-                            appointmentsService.addAppointment(resizedEvent)
-                                .then(function(response){   
-                                    console.log(response.data); 
-                                })
-                                .catch(function(response){
-                                    revertFunc();
+                                appointmentsService.update(resizedEvent, function(){
+                                  console.log('RESIZED');
                                 });
+                            // appointmentsService.$save(resizedEvent)
+                            //     .$promise(function(response){   
+                            //         console.log(response.data); 
+                            //     })
+                            //     .catch(function(response){
+                            //         revertFunc();
+                            //     });
                         },
         // eventClick: function(event, jsEvent, view){
+        // },
+        // eventResize: function(event, delta, revertFunc){
+        //                     var resizedEvent = {_id : event._id,
+        //                                         start : event.start.format(),
+        //                                         end   : event.end.format(),
+        //                                         title : event.title};
+        //                     appointmentsService.updateAppointment(resizedEvent)
+        //                         .then(function(response){ 
+        //                             event.color = response.color;
+        //                             // console.log('eventResize then ');
+        //                             // console.log('response ' + response.data);   
+        //                         })
+        //                         .catch(function(response){
+        //                             // console.log('eventResize catch ');
+        //                             // console.log('response ' + response.data); 
+        //                             revertFunc();
+        //                         });
         // },
         eventResize: function(event, delta, revertFunc){
                             var resizedEvent = {_id : event._id,
                                                 start : event.start.format(),
                                                 end   : event.end.format(),
                                                 title : event.title};
-                            appointmentsService.updateAppointment(resizedEvent)
-                                .then(function(response){ 
-                                    event.color = response.color;
-                                    // console.log('eventResize then ');
-                                    // console.log('response ' + response.data);   
-                                })
-                                .catch(function(response){
-                                    // console.log('eventResize catch ');
-                                    // console.log('response ' + response.data); 
-                                    revertFunc();
-                                });
+                            appointmentsService.update(resizedEvent, function(){
+                              console.log('UPDATED');
+                            });
+
+                                // .then(function(response){ 
+                                //     event.color = response.color;
+                                //     // console.log('eventResize then ');
+                                //     // console.log('response ' + response.data);   
+                                // })
+                                // .catch(function(response){
+                                //     // console.log('eventResize catch ');
+                                //     // console.log('response ' + response.data); 
+                                //     revertFunc();
+                                // });
         },
         slotMinutes: '00:15:00',
         snapDuration: '00:30:00',
@@ -110,13 +170,20 @@ $('#calendar').fullCalendar({
         contentHeight: 'auto',
         eventRender: function(event, element) { 
            element.find(".fc-bg").css("pointer-events","none");
-           var newElement = "<div id='events-layer' class='fc-transparent' style='position:absolute;top:-1px;right:0em;height:1em;z-index:100' ><button type='button' id='btnDeleteEvent' class='btn btn-block btn-primary btn-flat glyphicon glyphicon-remove-sign'></button></div>";
+           // var newElement = "<div id='events-layer' class='fc-transparent' style='position:absolute;top:-1px;right:0em;height:1em;z-index:100' ><button type='button' id='btnDeleteEvent' class='btn btn-block btn-primary btn-flat glyphicon glyphicon-remove-sign'></button></div>";
+           var newElement = "<div id='events-layer' class='fc-transparent' style='position:absolute;top:-1px;right:0em;height:1em;z-index:100' ><span id='btnDeleteEvent' class='glyphicon glyphicon-remove-sign'></span></div>";
            element.append(newElement);
            
            element.find("#btnDeleteEvent").click(function(){
-                appointmentsService.deleteAppointment({_id: event._id}).then(function(response){
-                    removeCalendarEvent(event);
+                appointmentsService.delete({_id: event._id}, function(){
+                  console.log('DELETED');
+                  removeCalendarEvent(event);
                 });
+                
+                // appointmentsService.deleteAppointment({_id: event._id}).then(function(response){
+                //     removeCalendarEvent(event);
+                // });
+
            });
          }
 });
