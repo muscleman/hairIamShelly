@@ -6,13 +6,15 @@ hiamsApp.factory('authenticationInterceptor', ['$q', '$location', 'sessionServic
 				// console.log('response 401');
 				sessionService.removeItem(storageKey);
 			} else if (response.status === 200){
-				sessionService.setItem(storageKey, response.data);
+				if (response.data !== undefined && response.data.token !== undefined )
+				{
+					sessionService.setItem(storageKey, response.data);
+				}
 			}
 			return response || $q.when(response);
 		},
 		responseError: function(response){
 			if (response.status === 401){
-				//console.log('Response Error 401', response);
 				$location.path('/login').search('returnUrl', $location.path());
 			}
 			return $q.reject(response);
