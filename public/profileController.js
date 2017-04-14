@@ -1,4 +1,4 @@
-hiamsApp.controller('profileController', ['$scope', '$http', 'clientsService', function ($scope, $http, clientsService) {
+hiamsApp.controller('profileController', ['$scope', '$http', 'client', function ($scope, $http, client) {
 
 
 	$scope.clientProfile = 'my profile';
@@ -94,8 +94,8 @@ hiamsApp.controller('profileController', ['$scope', '$http', 'clientsService', f
 	}
 
 	$scope.refresh = function(){
-		clientsService.readClient().then(function(response){
-			if(angular.isDefined(response.data))
+		client.query().$promise.then(function(response){
+			if(response.status === 200 && angular.isDefined(response.data))
 			{
 				$scope.client = response.data;
 			}	
@@ -116,7 +116,7 @@ hiamsApp.controller('profileController', ['$scope', '$http', 'clientsService', f
       		return response.data.results.map(function(item){
       			//console.log(item.address_components);
       			 //$scope.address_component = item.address_components;
-      			 $scope.client.city = item.address_components[2].long_name;
+      			 //$scope.client.city = item.address_components[2].long_name;
        			 return item.formatted_address;
       			});
     		});
@@ -143,9 +143,9 @@ hiamsApp.controller('profileController', ['$scope', '$http', 'clientsService', f
 	// };
 
 	$scope.updateClient = function() {
-		clientsService.updateClient($scope.client).then(function(response){
+		client.update($scope.client).$promise.then(function(response){
 			$scope.client = {};	
-			$scope.client = response.data;
+			$scope.client = response;
 		})
 		.catch(function(response){
 			console.log('Error: ' + response);
