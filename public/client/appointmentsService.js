@@ -3,7 +3,8 @@ hiamsApp.factory('appointmentsService', ['$resource', 'authenticationInterceptor
 		{},
 		{
 			'list': {method: 'POST', isArray: true, interceptor: authenticationInterceptor},
-			'update': {method: 'PUT', interceptor: authenticationInterceptor}
+			'update': {method: 'PUT', interceptor: authenticationInterceptor},
+			'query' : {method: 'GET', isArray: true, interceptor: authenticationInterceptor}
 		}
 	);
 }]);

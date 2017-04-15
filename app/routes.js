@@ -2,6 +2,8 @@
  var Appointment 		= require('./models/appointment');
  var jwt             	= require('jsonwebtoken');
  var path            	= require('path');
+ var _   				= require('lodash');
+ 
 
 
 module.exports = function(app) {
@@ -68,7 +70,9 @@ module.exports = function(app) {
 
 
 	function ensureAuthorized(req, res, next){
-		var token = req.headers.authorization.replace('Bearer ', '');
+		var token;
+		if (_.has(req, 'headers.authorization'))
+			token = req.headers.authorization.replace('Bearer ', '');
 		if (token){
 			 jwt.verify(token, req.app.settings.superSecret, function(err, decoded){
 				if (err){
@@ -85,21 +89,9 @@ module.exports = function(app) {
 		}
 	}
 
-	// api ---------------------------------------------------------------------
+	// api Appointments---------------------------------------------------------------------
 	// get all appointments
-	app.get('/api/appointment', ensureAuthorized, function(req, res) {
-		// use mongoose to get all clients in the database
-		Appointment.find(function(err, appointments) {
-			if (err)
-			{
-				console.log(err);
-				res.send(err);
-			}
-			//console.log(appointments);
-			res.json(appointments); // return all todos in JSON format
-		});
-	});
-	// app.post('/api/appointments', ensureAuthorized, function(req, res) {
+	// app.get('/api/appointment', ensureAuthorized, function(req, res) {
 	// 	// use mongoose to get all clients in the database
 	// 	Appointment.find(function(err, appointments) {
 	// 		if (err)
@@ -107,12 +99,33 @@ module.exports = function(app) {
 	// 			console.log(err);
 	// 			res.send(err);
 	// 		}
+	// 		//console.log(appointments);
 	// 		res.json(appointments); // return all todos in JSON format
 	// 	});
 	// });
 
 
-	// app.post('/api/addAppointment', ensureAuthorized, function(req, res) {
+	app.get('/api/appointment', ensureAuthorized, function(req, res) {
+		// use mongoose to get all clients in the database
+		Appointment.find()
+		.then(function(appointments) {
+			res.json(appointments); // return all todos in JSON format
+		})
+		.catch(function(err){
+			if (err)
+			{
+				console.log(err);
+				res.send(err);
+			}
+			
+		});
+	});
+
+	// add new appointment
+	// app.post('/api/appointment', ensureAuthorized, function(req, res) {
+	// 	// console.log(res.locals.decoded._id);
+	// 	// console.log(req.body);
+	// 	// return res.status(304).send({message: 'Forced Error!'});
 	// 	Client.findOne({_id: res.locals.decoded._id}, function(err, client){
 	// 		if (err)
 	// 			res.send(err);
@@ -135,56 +148,42 @@ module.exports = function(app) {
 	// 	});
 	// });
 
-	// add new appointment
+
 	app.post('/api/appointment', ensureAuthorized, function(req, res) {
 		// console.log(res.locals.decoded._id);
 		// console.log(req.body);
-		Client.findOne({_id: res.locals.decoded._id}, function(err, client){
-			if (err)
-				res.send(err);
-			if (client){
-				if (Appointment.findOne({_id: req.body._id}, function(err, appointment){
-					if (err)
-						res.send(err);
-					if (!appointment){
-						var newAppointment = new Appointment(req.body);
-						newAppointment.backgroundColor = 'green';
-						client.appointments.push(newAppointment);
-						newAppointment.save(function(err, appointment){
+		// return res.status(304).send({message: 'Forced Error!'});
+		Client.findOne({_id: res.locals.decoded._id})
+			.then(function(client){
+				if (client){
+					Appointment.findOne({_id: req.body._id})
+						.then(function(appointment){
+							if (!appointment){
+								var newAppointment = new Appointment(req.body);
+								newAppointment.backgroundColor = 'green';
+								client.appointments.push(newAppointment);
+								newAppointment.save(function(err, appointment){
+									if (err)
+										res.send(err);
+									res.json(appointment);
+								});
+							}
+						})
+						.catch(function(err){
 							if (err)
 								res.send(err);
-							res.json(appointment);
-						});
-					}
-				}));
-			}
-		});
+						});				
+				}
+			})
+			.catch(function(err){
+				if (err)
+					res.send(err);
+			});
 	});
-
-	// app.post('/api/updateAppointment', ensureAuthorized, function(req, res) {
-	// 	Client.findOne({_id: res.locals.decoded._id}, function(err, client){
-	// 		if (err)
-	// 			res.send(err);
-	// 		if (client){
-	// 				var updateData = {
-	// 							title		: req.body.title,
-	// 							start		: req.body.start,
-	// 							end  		: req.body.end,
-	// 							backgroundColor : 'blue'
-	// 						};
-	// 				if (Appointment.findOneAndUpdate({_id: req.body._id}, {$set: updateData}, function(err, appointment){
-	// 					if (err)
-	// 						res.send(err);
-	// 					res.json(appointment);
-	// 				}));
-
-	// 		}
-	// 	});
-	// });
-
 
 	//update existing appointment
 	app.put('/api/appointment', ensureAuthorized, function(req, res) {
+		// return res.status(304).send({message: 'Forced Error!'});
 		Client.findOne({_id: res.locals.decoded._id}, function(err, client){
 			if (err)
 				res.send(err);
@@ -205,23 +204,10 @@ module.exports = function(app) {
 		});
 	});
 
-	// app.post('/api/deleteAppointment', ensureAuthorized, function(req, res) {
-	// 	Client.findOne({_id: res.locals.decoded._id}, function(err, client){
-	// 		if (err)
-	// 			res.send(err);
-	// 		if (client){
-	// 			if (Appointment.remove({_id: req.body._id}, function(err, appointment){
-	// 				if (err)
-	// 					res.send(err);
-	// 				res.send(appointment);
-	// 			}));
-	// 		}
-	// 	});
-	// });
-
 	//delete appointment
 	app.delete('/api/appointment', ensureAuthorized, function(req, res) {
 		// console.log(req.query._id);
+		//return res.status(304).send({message: 'Forced Error!'});
 		Client.findOne({_id: res.locals.decoded._id}, function(err, client){
 			if (err)
 				res.send(err);
@@ -235,9 +221,11 @@ module.exports = function(app) {
 		});
 	});
 
-	// api ---------------------------------------------------------------------
-	// get all clients
-	app.get('/api/readClients', ensureAuthorized,  function(req, res) {
+	// api Appointments---------------------------------------------------------------------
+
+	// api Clients---------------------------------------------------------------------
+	//get all clients
+	app.get('/api/clients', ensureAuthorized,  function(req, res) {
 		// use mongoose to get all clients in the database
 		Client.find(function(err, clients) {
 			if (err)
@@ -249,40 +237,8 @@ module.exports = function(app) {
 		});
 	});
 
-	app.get('/api/readClient', ensureAuthorized,  function(req, res) {
-		// use mongoose to get all clients in the database
-		Client.findOne({_id: res.locals.decoded._id}, function(err, client) {
-			if (err)
-			{
-				res.send(err);
-			}
-			res.json(client); // return all clients in JSON format
-		});
-	});
-
-	app.post('/api/addClient', ensureAuthorized, function(req, res) {
-		Client.findOne({_id: res.locals.decoded._id}, function(err, client){
-			if (err)
-				res.send(err);
-			var newClient = {};
-			if (!client){
-				newClient = new Client(req.body);
-				newClient.password = bcrypt.hashSync('1234', bcrypt.genSaltSync(10));
-				newClient.save(function(err, client){
-					if (err)
-					{
-						res.send(err);
-					}
-					res.json(client);
-				});
-
-			} else {
-				res.json(client);
-			}
-		});
-	});
-
-	app.post('/api/updateClient', ensureAuthorized, function(req, res) {
+	//update existing client
+	app.put('/api/client', ensureAuthorized, function(req, res) {
 		var updateData = {
 					firstName				: req.body.firstName,
 					lastName				: req.body.lastName,
@@ -313,7 +269,8 @@ module.exports = function(app) {
 		}));
 	});
 
-	app.post('/api/deleteClient', ensureAuthorized, function(req, res) {
+	//delete client
+	app.delete('/api/client', ensureAuthorized, function(req, res) {
 		Client.findOne({_id: res.locals.decoded._id}, function(err, client){
 			if (err)
 				res.send(err);
@@ -326,6 +283,102 @@ module.exports = function(app) {
 			}
 		});
 	});
+
+
+
+	// get all clients
+	// app.get('/api/readClients', ensureAuthorized,  function(req, res) {
+	// 	// use mongoose to get all clients in the database
+	// 	Client.find(function(err, clients) {
+	// 		if (err)
+	// 		{
+	// 			console.log(err);
+	// 			res.send(err);
+	// 		}
+	// 		res.json(clients); // return all clients in JSON format
+	// 	});
+	// });
+
+
+	//get one client
+	app.get('/api/client', ensureAuthorized,  function(req, res) {
+		console.log('/api/client');
+		Client.findOne({_id: res.locals.decoded._id}, function(err, client) {
+			if (err)
+			{
+				res.send(err);
+			}
+			res.json(client); // return all clients in JSON format
+		});
+	});
+
+	//add new client
+	app.post('/api/client', ensureAuthorized, function(req, res) {
+		Client.findOne({_id: res.locals.decoded._id}, function(err, client){
+			if (err)
+				res.send(err);
+			var newClient = {};
+			if (!client){
+				newClient = new Client(req.body);
+				newClient.password = bcrypt.hashSync('1234', bcrypt.genSaltSync(10));
+				newClient.save(function(err, client){
+					if (err)
+					{
+						res.send(err);
+					}
+					res.json(client);
+				});
+
+			} else {
+				res.json(client);
+			}
+		});
+	});
+
+	// app.post('/api/updateClient', ensureAuthorized, function(req, res) {
+	// 	var updateData = {
+	// 				firstName				: req.body.firstName,
+	// 				lastName				: req.body.lastName,
+	// 				dob						: req.body.dob,
+	// 				date        			: req.body.date,
+	// 				phoneHome				: req.body.phoneHome,
+	// 				phoneWork				: req.body.phoneWork,
+	// 				address					: req.body.address,
+	// 				city					: req.body.city,
+	// 				state					: req.body.state,
+	// 				zip						: req.body.zip,
+	// 				cell					: req.body.cell,
+	// 				email					: req.body.email,
+	// 				occupation				: req.body.occupation,
+	// 				employer				: req.body.employer,
+	// 				preferredAptDay			: req.body.preferredAptDay,
+	// 				time					: req.body.time,
+	// 				allergies				: req.body.allergies,
+	// 				commonHairProducts 		: req.body.commonHairProducts,
+	// 				commonRetailProducts 	: req.body.commonRetailProducts,
+	// 				referred				: req.body.referred,
+	// 				clientRemarks 			: req.body.clientRemarks
+	// 			};
+	// 	if (Client.findOneAndUpdate({_id: req.body._id}, {$set: updateData}, function(err, client){
+	// 		if (err)
+	// 			res.send(err);
+	// 		res.json(req.body);
+	// 	}));
+	// });
+
+	// app.post('/api/deleteClient', ensureAuthorized, function(req, res) {
+	// 	Client.findOne({_id: res.locals.decoded._id}, function(err, client){
+	// 		if (err)
+	// 			res.send(err);
+	// 		if (client){
+	// 			if (Client.remove({_id: res.locals.decoded._id}, function(err, appointment){
+	// 				if (err)
+	// 					res.send(err);
+	// 				res.send(appointment);
+	// 			}));
+	// 		}
+	// 	});
+	// });
 
 	// application -------------------------------------------------------------
 	app.get('/*', function(req, res) {

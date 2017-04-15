@@ -7,7 +7,6 @@
     var port            = process.env.PORT || 8080;
     var database        = require('./config/database');
     var path            = require('path');
-
     
     
 
@@ -18,6 +17,7 @@
 
     // configuration =================
 
+    mongoose.Promise = require('bluebird');
     // mongoose.connect('mongodb://node:nodeuser@mongo.onmodulus.net:27017/uwO3mypu');     // connect to mongoDB database on modulus.io
     //mongoose.connect('mongodb://localhost/nodetest1');
     mongoose.connect(database.url);

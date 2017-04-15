@@ -185,8 +185,8 @@ $('#calendar').fullCalendar({
 $(document).ready(function() {
   var bottomDifference = $('#container')[0].getBoundingClientRect().bottom - $('.fc-slats')[0].getBoundingClientRect().bottom;
   var currentHeight = $( ".fc-slats > table" ).css( "height");
-  console.log("Current: ", currentHeight);
-  console.log("Bottom: ", bottomDifference);
+  //console.log("Current: ", currentHeight);
+  //console.log("Bottom: ", bottomDifference);
   var newHeight = parseInt(currentHeight) + bottomDifference;
    $( ".fc-slats > table" ).css( "height", newHeight );
 });

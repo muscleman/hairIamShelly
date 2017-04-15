@@ -17,30 +17,30 @@ hiamsApp.factory('sessionInjector', ['sessionService', function(sessionService) 
     return sessionInjector;
 }]);
 
-hiamsApp.factory('AuthHttpResponseInterceptor', ['$q', '$location', 'sessionService', function ($q, $location, sessionService) {
+// hiamsApp.factory('AuthHttpResponseInterceptor', ['$q', '$location', 'sessionService', function ($q, $location, sessionService) {
 
-	return {
-		response: function(response){
-			if (response.status === 401){
-				console.log('Response 401');
-			}
-			return response || $q.when(response);
-		},
-		responseError: function(rejection){
-			if (rejection.status === 401){
-				//console.log('Response Error 401', rejection);
-				$location.path('/login').search('returnUrl', $location.path());
-			}
-			return $q.reject(rejection);
-		}
-	};
-}]);
+// 	return {
+// 		response: function(response){
+// 			if (response.status === 401){
+// 				console.log('Response 401');
+// 			}
+// 			return response || $q.when(response);
+// 		},
+// 		responseError: function(rejection){
+// 			if (rejection.status === 401){
+// 				//console.log('Response Error 401', rejection);
+// 				$location.path('/login').search('returnUrl', $location.path());
+// 			}
+// 			return $q.reject(rejection);
+// 		}
+// 	};
+// }]);
 
 
 hiamsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider){
 
 	$httpProvider.interceptors.push('sessionInjector');
-	$httpProvider.interceptors.push('AuthHttpResponseInterceptor');
+	//$httpProvider.interceptors.push('AuthHttpResponseInterceptor');
 
 	$urlRouterProvider.otherwise('/login');
 	
