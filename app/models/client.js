@@ -20,7 +20,7 @@ var clientSchema = new Schema({
 	state						: String,
 	zip							: String,
 	cell						: String,
-	email						: {type: String, required: true, unique: true},
+	email						: {type: String, required: true, unique: true, isAsync : true},
 	occupation					: String,
 	employer					: String,
 	preferredAptDay				: String,

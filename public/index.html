@@ -20,11 +20,13 @@
 		<script src='javascripts/fullcalendar/fullcalendar.js'></script> 
 
 
+
+
 		<script src="app.js"></script>
 		<script src="client/authenticationService.js"></script>
 		<script src="client/appointmentsService.js"></script>
 		<script src="client/sessionService.js"></script>
-		<script src="client/client.js"></script>
+		<script src="client/clientsService.js"></script>
 		<script src="registerController.js"></script>
 		<!-- <script src="appointmentsService.js"></script> -->
 		<script src="appointmentsController.js"></script>
@@ -40,18 +42,18 @@
 				<a class="navbar-brand" ui-sref="#">Hair I Am Shelly</a>
 			</div>
 			<ul class="nav navbar-nav">
-		      <li><a ui-sref="home">Home</a></li>
-		      <li><a ui-sref="clients">clients</a></li>
-		      <li><a ui-sref="profile">my profile</a></li>
-		      <li><a ui-sref="appointments">appointments</a></li>
-		      <li><a ui-sref="login">login</a></li>
+		      <li><a ui-sref="home" ui-sref-active="active">Home</a></li>
+		      <li><a ui-sref="clients" ui-sref-active="active">clients</a></li>
+		      <li><a ui-sref="profile" ui-sref-active="active">my profile</a></li>
+		      <li><a ui-sref="appointments" ui-sref-active="active">appointments</a></li>
+		      <li><a ui-sref="login" ui-sref-active="active">login</a></li>
 		    </ul>
 		    <ul class="nav navbar-nav pull-right">
 		    	<li><a ui-sref="logout"><strong>logout</strong></a></li>
 		    </ul>
 		</nav>
 		<div class="container-fluid">
-			<div ui-view></div>
+			<ui-view></ui-view>
 		</div>
 	</body>
 </html>

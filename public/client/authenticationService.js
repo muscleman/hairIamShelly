@@ -18,15 +18,16 @@ hiamsApp.factory('authenticationInterceptor', ['$q', '$location', 'sessionServic
 				$location.path('/login').search('returnUrl', $location.path());
 			}
 			return $q.reject(response);
-		},
-		request: function(config) {
-			console.log('Adding Bearer');
-			//if (sessionService.getItem('hairiamshelly') !== null)
-    		//{
-				config.headers.Authorization = 'Bearer ' + sessionService.getItem('hairiamshelly').token;
-			//}
-            return config;
-        }
+		}
+		// ,
+		// request: function(config) {
+		// 	console.log('Adding Bearer');
+		// 	//if (sessionService.getItem('hairiamshelly') !== null)
+  //   		//{
+		// 		config.headers.Authorization = 'Bearer ' + sessionService.getItem('hairiamshelly').token;
+		// 	//}
+  //           return config;
+  //       }
 	};
 }]);
 
