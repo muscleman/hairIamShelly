@@ -71,17 +71,105 @@ hiamsApp.factory('sessionInjector', ['sessionService', function(sessionService) 
 // }]);
 
 
-hiamsApp.component('myclients', {
-	bindings: {allClients: '<'},
-	template: '<h4>myclients</h4>'
-	// template: '<ul>' +
-	// 		  '	<li ng-repeat="person in $ctrl.allClients">' +
-	// 		  ' 	<a ui-sref="person({clientId: person._id})">' +
-	// 		  '			{{person.firstName}}' +
-	// 		  '		</a>' +
-	// 		  '	</li>' +
-	// 		  '</ul>',	
+// hiamsApp.component('clients', {
+// 	//bindings: {allClients: '<'},
+// 	// template: '<ul>' +
+// 	// 		  '	<li ng-repeat="client in clientsController.allClients>' +
+// 	// 		  ' 	<a ui-sref="client({clientId: client._id})">' +
+// 	// 		  '			{{client.firstName}}' +
+// 	// 		  '		</a>' +
+// 	// 		  '	</li>' +
+// 	// 		  '</ul>',	
+// 	template: '<div>' +
+// 			  '<h4>In Component</h4>' +
+// 			  '<ul>' +
+// 			  '	<li ng-repeat="client in allClients">' +
+// 			  '			{{client.firstName}}' +
+// 			  '	</li>' +
+// 			  '</ul>' +
+// 			  '</div>',	
+// 	// resolve: {
+// 	// 			clientsService : 'clientsService',
+// 	// 			allClients : function(clientsService) {
+
+// 	// 				// var d = clientsService.query().$promise;
+//  //     //                    d.then(function(r){
+//  //     //                        console.log(r.data[0]);
+//  //     //                        return r.data[0];
+//  //     //                    });
+// 	// 				return clientsService.query().$promise;
+// 	// 			}
+// 	// 		}
+	
+// 	controller: function($scope, clientsService){
+// 		clientsService.query().$promise.then(function(response){
+// 			$scope.allClients = response.data;
+// 		});
+// 	}
+// });
+
+
+
+
+hiamsApp.component('clients', {
+	bindings: {clients: '<'},
+	template: '<div>' +
+			  '    <div>' +
+			  '        <h4>In Component</h4>' +
+			  '        <ul>' +
+			  '	           <li ng-repeat="client in $ctrl.clients">' +
+			  '                <a ui-sref-active="active" ui-sref="clients.client({ clientId: client._id })">' +
+              '                    {{client.firstName}}' +
+              '                </a>' +
+			  '	           </li>' +
+			  '        </ul>' +
+			  '    </div>' +
+			  '    <ui-view></ui-view>' +
+              '</div>',	
+
+    // template: '<pre>{{$ctrl.allClients|json}}</pre>'
+
+
+
+	// controller: function(clientsService){
+	// 	var $ctrl = this;
+	// 	clientsService.query().$promise.then(function(response){
+	// 		$ctrl.allClients = response.data;
+	// 	});
+
+
+	// }	
+
+	// controller : function($scope){
+	// 	console.log($ctrl.allClients);
+	// 	$scope.allClients = $ctrl.allClients;
+	// }
 });
+
+hiamsApp.component('client', {
+	bindings: {client: '<'},
+	template: '<h3>A client!</h3>' +
+  
+            '<div>Name: {{$ctrl.client.firstName}}</div>' +
+            '<div>Id: {{$ctrl.client._id}}</div>' +
+            '<div>Email: {{$ctrl.client.email}}</div>' +
+            '<div>Address: {{$ctrl.client.address}}</div>',
+ //    controller: function($stateParams) {
+ //    		var $ctrl = this;
+ //    		console.log($stateParams);
+ //    		console.log(this);
+	// 		// var $ctrl = this;
+	// 		// $ctrl.client = $ctrl.allClients.find(function(client){
+	//   //           									return client._id === $stateParams.clientId;
+	//   //           							});
+	//   $ctrl.client = {};
+	// }
+});
+
+
+
+
+
 
 hiamsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider){
 
@@ -99,7 +187,6 @@ hiamsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$
 			url: '/login',
 			controller: function($scope, sessionService){
 				sessionService.removeItem('hairiamshelly');
-				//$route.reload();
 			}
 		}).state('register', {
 			url: '/register',
@@ -117,23 +204,58 @@ hiamsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$
 			templateUrl: 'appointments.html',
 			controller: 'appointmentsController'
 		}).state('clients', {
-			abstract: true,
 			url: '/clients',
-			templateUrl: 'clients.html',
-		}).state('clients.list', {
-			url: '/list',
-			component: 'myclients',
+			component: 'clients',
+			 //template: '<all-Clients/>',
+			 // component: 'allClients'
+			 // controller: function($scope, clientsService){
+				// 	clientsService.query().$promise.then(function(response){
+				// 		$scope.allClients = response.data;
+				// 	});
+				// }
+			//component: 'allClients',
+			// resolve: {
+				// allclients: function(clientsService){
+				// 				return [{firstName : 'Gary', _id : 1, email : 'abc@dot.com', address: '123 street'}, {firstName : 'Shelly', _id : 2, email : 'xyx@dot.com', address: '456 street'}];
+											
+				// 		}
+				// 	}
+			// resolve: {
+			// 	allclients: function(clientsService){
+			// 				clientsService.query().$promise.then(function(response){
+			// 								//return response.data;
+			// 								return [{firstName : 'Gary', _id : 1, email : 'abc@dot.com', address: '123 street'}, {firstName : 'Shelly', _id : 2, email : 'xyx@dot.com', address: '456 street'}];
+			// 								});
+			// 			}
+			// 		}
 			resolve: {
-				allClients : function(clientsService) {
-					return clientsService.list().$promise;
-				}
-			},
-		});
-		// .state('clients.detail', {
-		// 	url: '/detail',
-		// 	//template: '<ui-view/>',
-		// });
+				        clients : function(clientsService) {
+				            return clientsService.query().$promise.then(function(response){
+				            	return response.data;
+				            });
+				        }
 
+				    }
+		}).state('clients.client', {
+			url: '/{clientId}',
+			//template: '<client-List/>',
+			component: 'client',
+			 // resolve: {
+				//         client : function(allClients, $stateParams) {
+				//             return allClients.find(function(client){
+				//             	return client._id === $stateParams.clientId;
+				//             });
+				//         }
+
+				//     }
+				resolve: {
+						person : function(clients, $stateParams){
+							return clients.find(function(client){
+								return client._id === $stateParams.clientId;
+							});
+						}
+				}
+		});
 
 	
 	$locationProvider.html5Mode(true);

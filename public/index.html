@@ -10,8 +10,8 @@
 		<script src="javascripts/angular/angular.min.js"></script><!-- load angular -->
 		<script src="javascripts/angular-resource/angular-resource.js"></script>
 		<script src="javascripts/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js"></script>
-		<script src="javascripts/angular-ui-router/angular-ui-router.min.js"></script>
-		
+		<!-- <script src="javascripts/angular-ui-router/angular-ui-router.min.js"></script> -->
+		<script src="//unpkg.com/angular-ui-router@1.0.0-rc.1/release/angular-ui-router.js"></script>
 
 
 		
@@ -32,7 +32,7 @@
 		<script src="appointmentsController.js"></script>
 		<!-- <script src="clientsService.js"></script> -->
 		<script src="profileController.js"></script>
-		<script src="clientsController.js"></script>
+		<!-- <script src="clientsController.js"></script> -->
 		<script src="loginController.js"></script>
 		<base href="/">
 	</head>
@@ -43,7 +43,7 @@
 			</div>
 			<ul class="nav navbar-nav">
 		      <li><a ui-sref="home" ui-sref-active="active">Home</a></li>
-		      <li><a ui-sref="clients" ui-sref-active="active">clients</a></li>
+		      <li><a ui-sref="clients" ui-sref-active="active">Clients</a></li>
 		      <li><a ui-sref="profile" ui-sref-active="active">my profile</a></li>
 		      <li><a ui-sref="appointments" ui-sref-active="active">appointments</a></li>
 		      <li><a ui-sref="login" ui-sref-active="active">login</a></li>
@@ -52,8 +52,8 @@
 		    	<li><a ui-sref="logout"><strong>logout</strong></a></li>
 		    </ul>
 		</nav>
-		<div class="container-fluid">
+		<!-- <div class="container-fluid"> -->
 			<ui-view></ui-view>
-		</div>
+		<!-- </div> -->
 	</body>
 </html>
