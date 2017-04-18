@@ -5,6 +5,7 @@ var hiamsApp = angular.module('hiamsApp', ['ui.router',
 											]);
 
 
+hiamsApp.constant('_', _);
 
 hiamsApp.factory('sessionInjector', ['sessionService', function(sessionService) {  
     var sessionInjector = {
@@ -227,8 +228,8 @@ hiamsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$
 			url: '/{clientId}',
 			component: 'client',
 				resolve: {
-						client : function(clients, $stateParams){
-							return clients.find(function(client){
+						client : function(clients, $stateParams, _){
+							return _.find(clients, function(client){
 								return client._id === $stateParams.clientId;
 							});
 						}
@@ -238,9 +239,3 @@ hiamsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$
 	
 	$locationProvider.html5Mode(true);
 }]);
-
-
-// hiamsApp.component('client', {
-// 	template: '',
-// 	controller: 'clientsController',
-// });

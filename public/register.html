@@ -4,25 +4,28 @@
       		<div class="jumbotron-content">
         		<h1>Hair I Am Shelly...</h1>
         		<div class="jumbotron-lg-only">
+              <form name="registerForm">
                 <div class="form-group">
                   <label for="firstName">First Name:</label>
-                  <input type="firstName" name="firstName" class="form-control" placeholder="FirstName" ng-model="credentials.firstName">
+                  <input type="firstName" name="firstName" class="form-control" placeholder="FirstName" required ng-model="$ctrl.credentials.firstName">
                 </div>
                 <div class="form-group">
                   <label for="lastName">Last Name:</label>
-                  <input type="lastName" name="lastName" class="form-control" placeholder="LastName" ng-model="credentials.lastName">
+                  <input type="lastName" name="lastName" class="form-control" placeholder="LastName" required ng-model="$ctrl.credentials.lastName">
                 </div>
           			<div class="form-group">
             			<label for="email">Email:</label>
-            			<input type="email" name="email" class="form-control" placeholder="Email" ng-model="credentials.email">
+            			<input type="email" name="email" class="form-control" placeholder="Email" ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/" required ng-model="$ctrl.credentials.email">
+                  <div ng-message="registerForm.email.$error"></div>
           			</div>
           			<div class="form-group">
           				<label for="password">Password:</label>
-            			<input type="password" name="password" class="form-control" placeholder="Password" ng-model="credentials.password">
+            			<input type="password" name="password" class="form-control" placeholder="Password" required ng-model="$ctrl.credentials.password">
           			</div>
-                <div ng-if="error" class="alert alert-danger" ng-bind="error"></div>
-          			<button class="btn btn-primary btn-large" ng-click="register()">Sign Up</button>
+                <div ng-if="error" class="alert alert-danger" ng-bind="$ctrl.error"></div>
+          			<button class="btn btn-primary btn-large" ng-click="$ctrl.register()">Sign Up</button>
               </div>
+            </form>
       		</div>
     	</div>
 	</div>

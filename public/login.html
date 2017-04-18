@@ -6,14 +6,14 @@
         		<p class="jumbotron-lg-only">Join our community or login now</p>
           			<div class="form-group">
             			<label for="email">Email:</label>
-            			<input type="email" name="email" class="form-control" placeholder="Email" ng-model="credentials.email">
+            			<input type="email" name="email" class="form-control" placeholder="Email" ng-model="$ctrl.credentials.email">
           			</div>
           			<div class="form-group">
           				<label for="password">Password:</label>
-            			<input type="password" name="password" class="form-control" placeholder="Password" ng-model="credentials.password">
+            			<input type="password" name="password" class="form-control" placeholder="Password" ng-model="$ctrl.credentials.password">
           			</div>
-                <div ng-if="error" class="alert alert-danger" ng-bind="error"></div>
-          			<button class="btn btn-primary btn-large" ng-click="register()">Sign Up</button><button class="pull-right btn btn-default" ng-click="login()">Sign In</button>
+                <div ng-if="error" class="alert alert-danger" ng-bind="$ctrl.error"></div>
+          			<button class="btn btn-primary btn-large" ng-click="$ctrl.register()">Sign Up</button><button class="pull-right btn btn-default" ng-click="$ctrl.login()">Sign In</button>
       		</div>
     	</div>
 	</div>

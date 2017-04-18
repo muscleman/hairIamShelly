@@ -3,7 +3,6 @@ hiamsApp.factory('authenticationInterceptor', ['$q', '$location', 'sessionServic
 	return {
 		response: function(response){
 			if (response.status === 401){
-				console.log('response 401');
 				sessionService.removeItem(storageKey);
 			} else if (response.status === 200){
 				if (response.data !== undefined && response.data.token !== undefined )
@@ -35,7 +34,8 @@ hiamsApp.factory('authenticationService', ['$resource', 'authenticationIntercept
 	return $resource(':name', 
 		{},
 		{
-			'authenticate': {url: '/api/authenticate', method: 'POST', isArray: false, interceptor: authenticationInterceptor}
+			'authenticate': {url: '/api/authenticate', method: 'POST', isArray: false, interceptor: authenticationInterceptor},
+			'register': {url: '/api/register', method: 'POST', isArray: false, interceptor: authenticationInterceptor}
 		}
 	);
 }]);

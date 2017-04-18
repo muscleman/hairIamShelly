@@ -1,25 +1,25 @@
-hiamsApp.controller('loginController', ['$scope', '$http', 'authenticationService', function ($scope, $http, authenticationService) {
+hiamsApp.controller('loginController', ['authenticationService', function (authenticationService) {
 
-	$scope.credentials = {email : '',
+	this.credentials = {email : '',
 						  password : ''};
 
-	$scope.error = '';
+	this.error = '';
 
 	// when submitting the add form, send the text to the node API
-	$scope.login = function() {
-		authenticationService.authenticate($scope.credentials).$promise
+	this.login = function() {
+		authenticationService.authenticate(this.credentials).$promise
 			.then(function(response) {
 				if (response.status === 200){
 				window.location.href = '/home';
 				}
 			})
 			.catch(function(response) {
-				$scope.error = response.data.message;
+				this.error = response.data.message;
 			});
 
 	};
 
-	$scope.register = function(){
+	this.register = function(){
 		window.location.href = '/register';
 	};
 

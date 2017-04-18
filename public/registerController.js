@@ -1,25 +1,22 @@
-hiamsApp.controller('registerController', ['$scope', '$http', 'sessionService', function ($scope, $http, sessionService) {
+hiamsApp.controller('registerController', ['authenticationService', function (authenticationService) {
 
-	$scope.credentials = {firstName : '',
+	this.credentials = {firstName : '',
 						  lastName : '', 
 						  email : '',
 						  password : ''};
 
-	$scope.error = '';
+	this.error = '';
 
 	// when submitting the add form, send the text to the node API
-	$scope.register = function() {
-		$http.post('/api/register', $scope.credentials)
+	this.register = function() {
+		authenticationService.register(this.credentials).$promise
 			.then(function(response) {
 				if (response.status === 200){
-				//console.log(response.data);
-				sessionService.setItem('hairiamshelly', response.data);
-				window.location.href = '/home';
+					window.location.href = '/home';
 				}
 			})
 			.catch(function(response) {
-				$scope.error = response.data.message;
-				sessionService.removeItem('hairiamshelly');
+				this.error = response.data.message;
 			});
 	};
 }]);

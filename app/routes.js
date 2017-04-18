@@ -9,7 +9,7 @@
 module.exports = function(app) {
 
 	app.post('/api/authenticate', function(req, res){
-		Client.findOne({email : req.body.email})
+		 Client.findOne({email : {$regex: req.body.email, $options: "i"}}).select('+password').exec()
 			.then(function(client){
 				if (!client){
 					return res.status(401).send({message: 'Authentication failed. User not found.'});
@@ -215,10 +215,11 @@ module.exports = function(app) {
 
 	//update existing client
 	app.put('/api/client', ensureAuthorized, function(req, res) {
-		console.log(req.body.firstName);
+		console.log(req.body.admin);
 		var updateData = {
 					firstName				: req.body.firstName,
 					lastName				: req.body.lastName,
+					admin					: req.body.admin,
 					dob						: req.body.dob,
 					date        			: req.body.date,
 					phoneHome				: req.body.phoneHome,

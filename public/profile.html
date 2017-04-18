@@ -4,7 +4,7 @@
 	<div class="col-xs-12">
 		<div class="row">
 			<div class="col-xs-12 text-center client-header">
-				<label ng-bind="clientProfile"></label>
+				<label ng-bind="$ctrl.clientProfile"></label>
 			</div>
 		</div>
 
@@ -32,6 +32,10 @@
 					<label class="client-sub-header">name
 					<input type="text" class="text-left client-content" ng-model="$ctrl.client.firstName"></input></label>
 				</div>
+<!-- 				<div class="col-xs-1">
+					<label class="client-sub-header">admin
+					<input type="checkbox" class="text-left client-content" ng-model="$ctrl.client.admin"></input></label>
+				</div> -->
 				<div class="col-xs-6">
 					<label class="client-sub-header">phone
 					<input type="text" class="text-left client-content" ng-model="$ctrl.client.phoneWork"></input></label>
