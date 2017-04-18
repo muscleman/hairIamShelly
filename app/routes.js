@@ -215,6 +215,7 @@ module.exports = function(app) {
 
 	//update existing client
 	app.put('/api/client', ensureAuthorized, function(req, res) {
+		console.log(req.body.firstName);
 		var updateData = {
 					firstName				: req.body.firstName,
 					lastName				: req.body.lastName,

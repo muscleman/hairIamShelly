@@ -1,26 +1,26 @@
-hiamsApp.controller('profileController', ['$scope', '$http', 'clientsService', function ($scope, $http, clientsService) {
+hiamsApp.controller('profileController', ['$http', 'clientsService', function ($http, clientsService) {
 
-
-	$scope.clientProfile = 'my profile';
-	$scope.client = {};
-	$scope.today = function() {
-		$scope.dt = new Date();
+	var vm = this;
+	this.clientProfile = 'my profile';
+	// vm.client = {};
+	this.today = function() {
+		this.dt = new Date();
 	};
 	
-	$scope.today();
+	this.today();
 
-	$scope.clear = function() {
-		$scope.dt = null;
+	this.clear = function() {
+		this.dt = null;
 	};
 
-	$scope.inlineOptions = {
-		customClass: getDayClass,
+	this.inlineOptions = {
+		customClass: this.getDayClass,
 		minDate: new Date(),
 		showWeeks: true
 	};
 
-	$scope.dateOptions = {
-		dateDisabled: disabled,
+	this.dateOptions = {
+		dateDisabled: this.disabled,
 		formatYear: 'yy',
 		maxDate: new Date(2020, 5, 22),
 		minDate: new Date(),
@@ -28,36 +28,36 @@ hiamsApp.controller('profileController', ['$scope', '$http', 'clientsService', f
 	};
 
 	// Disable weekend selection
-	function disabled(data) {
+	this.disabled = function(data) {
 		var date = data.date,
 	  	mode = data.mode;
 		return mode === 'day' && (date.getDay() === 0 || date.getDay() === 6);
-	}
-
-	$scope.toggleMin = function() {
-		$scope.inlineOptions.minDate = $scope.inlineOptions.minDate ? null : new Date();
-		$scope.dateOptions.minDate = $scope.inlineOptions.minDate;
 	};
 
-	$scope.toggleMin();
-
-	$scope.open1 = function() {
-		$scope.popup1.opened = true;
+	this.toggleMin = function() {
+		this.inlineOptions.minDate = this.inlineOptions.minDate ? null : new Date();
+		this.dateOptions.minDate = this.inlineOptions.minDate;
 	};
 
-	$scope.setDate = function(year, month, day) {
-		$scope.dt = new Date(year, month, day);
+	this.toggleMin();
+
+	this.open1 = function() {
+		this.popup1.opened = true;
 	};
 
-	$scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
-	$scope.format = $scope.formats[0];
-	$scope.altInputFormats = ['M!/d!/yyyy'];
+	this.setDate = function(year, month, day) {
+		this.dt = new Date(year, month, day);
+	};
 
-	$scope.popup1 = {
+	this.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
+	this.format = vm.formats[0];
+	this.altInputFormats = ['M!/d!/yyyy'];
+
+	this.popup1 = {
 		opened: false
 	};
 
-	$scope.popup2 = {
+	this.popup2 = {
 		opened: false
 	};
 
@@ -65,7 +65,7 @@ hiamsApp.controller('profileController', ['$scope', '$http', 'clientsService', f
 	tomorrow.setDate(tomorrow.getDate() + 1);
 	var afterTomorrow = new Date();
 	afterTomorrow.setDate(tomorrow.getDate() + 1);
-	$scope.events = [
+	this.events = [
 	{
 	  date: tomorrow,
 	  status: 'full'
@@ -76,39 +76,39 @@ hiamsApp.controller('profileController', ['$scope', '$http', 'clientsService', f
 	}
 	];
 
-	function getDayClass(data) {
+	this.getDayClass = function (data) {
 		var date = data.date,
 	  	mode = data.mode;
 		if (mode === 'day') {
 	  		var dayToCheck = new Date(date).setHours(0,0,0,0);
 
-		  	for (var i = 0; i < $scope.events.length; i++) {
-		    	var currentDay = new Date($scope.events[i].date).setHours(0,0,0,0);
+		  	for (var i = 0; i < this.events.length; i++) {
+		    	var currentDay = new Date(this.events[i].date).setHours(0,0,0,0);
 
 			    if (dayToCheck === currentDay) {
-			    	return $scope.events[i].status;
+			    	return this.events[i].status;
 			    }
 			}
 		}
 		return '';
-	}
-
-	$scope.refresh = function(){
-		//clientsService.query().$promise.then(function(response){
-		clientsService.get().$promise.then(function(response){
-			// console.log(response);
-			//if(response.status === 200 && angular.isDefined(response.data))
-			//{
-				$scope.client = response;
-			//}	
-		})
-		.catch(function(response){
-			console.log('Error: ' + response.data);
-		});
 	};
 
+	// this.refresh = function(){
+	// 	//clientsService.query().$promise.then(function(response){
+	// 	clientsService.get().$promise.then(function(response){
+	// 		// console.log(response);
+	// 		//if(response.status === 200 && angular.isDefined(response.data))
+	// 		//{
+	// 			vm.client = response;
+	// 		//}	
+	// 	})
+	// 	.catch(function(response){
+	// 		console.log('Error: ' + response.data);
+	// 	});
+	// };
 
-	$scope.getLocation = function(val) {
+
+	this.getLocation = function(val) {
     	return $http.get('//maps.googleapis.com/maps/api/geocode/json', {
 			params: {
 			address: val,
@@ -117,14 +117,14 @@ hiamsApp.controller('profileController', ['$scope', '$http', 'clientsService', f
     	}).then(function(response){
       		return response.data.results.map(function(item){
       			//console.log(item.address_components);
-      			 //$scope.address_component = item.address_components;
-      			 //$scope.client.city = item.address_components[2].long_name;
+      			 //vm.address_component = item.address_components;
+      			 //vm.client.city = item.address_components[2].long_name;
        			 return item.formatted_address;
       			});
     		});
   	};
 
-	$scope.modelOptions = {
+	vm.modelOptions = {
 		debounce: {
   			default: 500,
 	  		blur: 250
@@ -134,20 +134,21 @@ hiamsApp.controller('profileController', ['$scope', '$http', 'clientsService', f
 
 
 	// // when submitting the add form, send the text to the node API
-	// $scope.addClient = function() {
-	// 	clientsService.addClient($scope.client).then(function(response){
-	// 		$scope.client = {};	
-	// 		$scope.client = response.data;
+	// vm.addClient = function() {
+	// 	clientsService.addClient(vm.client).then(function(response){
+	// 		vm.client = {};	
+	// 		vm.client = response.data;
 	// 	})
 	// 	.catch(function(response){
 	// 		console.log('Error: ' + response);
 	// 	});
 	// };
 
-	$scope.updateClient = function() {
-		clientsService.update($scope.client).$promise.then(function(response){
-			$scope.client = {};	
-			$scope.client = response;
+	this.updateClient = function() {
+		// console.log(vm.client);
+		clientsService.update(vm.client).$promise.then(function(response){
+			//vm.client = {};	
+			//vm.client = response.data;
 		})
 		.catch(function(response){
 			console.log('Error: ' + response);
@@ -155,9 +156,9 @@ hiamsApp.controller('profileController', ['$scope', '$http', 'clientsService', f
 	};
 
 	// // delete a todo after checking it
-	// $scope.deleteClient= function(id) {
+	// vm.deleteClient= function(id) {
 	// 	clientsService.deleteClient().then(function(response){
-	// 		$scope.client = {};	
+	// 		vm.client = {};	
 	// 	})
 	// 	.catch(function(response){
 	// 		console.log('Error: ' + response);

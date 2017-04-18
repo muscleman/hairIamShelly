@@ -17,7 +17,6 @@
     "angular": "^1.6.4",
     "angular-resource": "^1.6.4",
     "angular-ui-bootstrap": "^2.5.0",
-    "angular-ui-router": "^1.0.0-rc.1",
     "bcryptjs": "^2.4.3",
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.1",
