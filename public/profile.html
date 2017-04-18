@@ -17,7 +17,7 @@
 				<div class="col-xs-6">
 					<p class="input-group">
 						<label class="client-sub-header text-left">dob</label>
-          				<input type="text" class="form-control client-content" uib-datepicker-popup="{{format}}" ng-model="$ctrl.client.dob" is-open="$ctrl.popup1.opened" datepicker-options="$ctrl.dateOptions" required="true" close-text="Close" alt-input-formats="$ctrl.altInputFormats" />
+          				<input type="text" class="form-control client-content" uib-datepicker-popup="{{$ctrl.format}}" ng-model="$ctrl.dob" is-open="$ctrl.popup1.opened" datepicker-options="$ctrl.dateOptions" ng-required="true" close-text="Close" alt-input-formats="$ctrl.altInputFormats" />
 			          <span class="input-group-btn">
 			            <button type="button" class="btn btn-default" ng-click="$ctrl.open1()"><i class="glyphicon glyphicon-calendar"></i></button>
 			          </span>

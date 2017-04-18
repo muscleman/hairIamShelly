@@ -197,11 +197,41 @@ module.exports = function(app) {
 
 	// api Clients---------------------------------------------------------------------
 	//get all clients
-	app.get('/api/clients', ensureAuthorized,  function(req, res) {
+	// app.get('/api/clients', ensureAuthorized,  function(req, res) {
+	// 	// use mongoose to get all clients in the database
+	// 	Client.find()
+	// 		.then(function(clients) {
+	// 			res.json(clients); // return all clients in JSON format
+	// 		})
+	// 		.catch(function(err){
+	// 			if (err)
+	// 			{
+	// 				console.log(err);
+	// 				res.send(err);
+	// 			}
+
+	// 		});
+	// });
+
+
+	app.get('/api/clients', function(req, res) {
 		// use mongoose to get all clients in the database
-		Client.find()
+		Client.find().sort('firstName').exec()
 			.then(function(clients) {
-				res.json(clients); // return all clients in JSON format
+				var v = _(clients)
+						.groupBy(function(x){
+							return x.firstName.charAt(0);
+						})
+						.map(function(value, key){
+							return {
+								letter: key,
+								clients: value
+							};
+						})
+						.value();
+					
+				console.log(v);
+				res.json(v); // return all clients in JSON format
 			})
 			.catch(function(err){
 				if (err)
@@ -277,7 +307,8 @@ module.exports = function(app) {
 		//console.log('/api/client');
 		Client.findOne({_id: res.locals.decoded._id})
 			.then(function(client) {
-				res.json(client); // return all clients in JSON format
+				console.log(client.dob);
+				res.json(client); // return client in JSON format
 			})
 			.catch(function(err){
 				if (err)
@@ -292,7 +323,6 @@ module.exports = function(app) {
 				var newClient = {};
 				if (!client){
 					newClient = new Client(req.body);
-					//newClient.password = bcrypt.hashSync('1234', bcrypt.genSaltSync(10));
 					newClient.save(function(err, client){
 						if (err)
 						{

@@ -114,30 +114,22 @@ hiamsApp.factory('sessionInjector', ['sessionService', function(sessionService) 
 
 
 hiamsApp.component('clients', {
-	bindings: {clients: '<'},
-	template: '<div class="flex-h">' +
-			  '    <div class="clients">' +
-			  '        <h4>Some Clients:</h4>' +
-			  '        <ul>' +
-			  '	           <li ng-repeat="client in $ctrl.clients">' +
-			  '                <a ui-sref-active="active" ui-sref=".client({ clientId: client._id })">' +
-              '                    {{client.firstName}}' +
-              '                </a>' +
-			  '	           </li>' +
-			  '        </ul>' +
-			  '    </div>' +
-			  '    <ui-view class="view-side-form"></ui-view>' +
-              '</div>',	
+	bindings: {rolodex: '<'},
+ 	templateUrl: 'clients.html',
+ 	controller: function(_){
+ 		var vm = this;
+ 	}
 });
 
 hiamsApp.component('client', {
 	bindings: {client: '<'},
-	template: '<h3>A client!</h3>' +
-  
-            '<div>Name: {{$ctrl.client.firstName}}</div>' +
-            '<div>Id: {{$ctrl.client._id}}</div>' +
-            '<div>Email: {{$ctrl.client.email}}</div>' +
-            '<div>Address: {{$ctrl.client.address}}</div>',
+	template: '<div>Name: {{$ctrl.client.firstName}} ' +
+              '{{$ctrl.client.lastName}}</div>' +
+              '<div>Email: {{$ctrl.client.email}}</div>' +
+              '<div>Address: {{$ctrl.client.address}}</div>' +
+              '<div>City: {{$ctrl.client.city}}</div>' +
+              '<div>State: {{$ctrl.client.state}}</div>' +
+              '<div>Zip: {{$ctrl.client.zip}}</div>',
 });
 
 
@@ -182,19 +174,12 @@ hiamsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$
 		.state('login', {
 			url: '/login',
 			component: 'login'
-			// templateUrl: 'login.html',
-			// controller: 'loginController'
 		}).state('logout', {
 			url: '/logout',
-			component: 'logout',
-			// controller: function($scope, sessionService){
-			// 	sessionService.removeItem('hairiamshelly');
-			// }
+			component: 'logout'
 		}).state('register', {
 			url: '/register',
 			component: 'register'
-			// templateUrl: 'register.html',
-			// controller: 'registerController'
 		}).state('home',{
 			url: '/home',
 			templateUrl: 'home.html'
@@ -202,22 +187,18 @@ hiamsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$
 			url: '/profile',
 			component: 'profile',
 			resolve: {
-				client : function($q, $state, clientsService){
+				client : function($state, clientsService){
 					return clientsService.get().$promise;
 				}
 			}
-			// templateUrl: 'profile.html',
-			// controller: 'profileController'
 		}).state('appointments', {
 			url: '/appointments',
 			component: 'appointments'
-			// templateUrl: 'appointments.html',
-			// controller: 'appointmentsController'
 		}).state('clients', {
 			url: '/clients',
 			component: 'clients',
 			resolve: {
-				        clients : function(clientsService) {
+				        rolodex : function(clientsService) {
 				            return clientsService.query().$promise.then(function(response){
 				            	return response.data;
 				            });
@@ -228,10 +209,10 @@ hiamsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$
 			url: '/{clientId}',
 			component: 'client',
 				resolve: {
-						client : function(clients, $stateParams, _){
-							return _.find(clients, function(client){
-								return client._id === $stateParams.clientId;
-							});
+						client : function(rolodex, $stateParams, _){
+							var v =  _.filter(rolodex, {clients: [{_id: $stateParams.clientId}]});
+							console.log(v[0].clients[0]);
+							return v[0].clients[0];
 						}
 				}
 		});

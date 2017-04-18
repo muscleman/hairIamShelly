@@ -1,17 +1,19 @@
-hiamsApp.controller('profileController', ['$http', 'clientsService', function ($http, clientsService) {
+hiamsApp.controller('profileController', ['$http', 'clientsService', '_', function ($http, clientsService, _) {
 
 	var vm = this;
+
 	this.clientProfile = 'my profile';
-	// vm.client = {};
 	this.today = function() {
-		this.dt = new Date();
+		this.dob = new Date();
 	};
+
 	
 	this.today();
 
 	this.clear = function() {
-		this.dt = null;
+		this.dob = null;
 	};
+
 
 	this.inlineOptions = {
 		customClass: this.getDayClass,
@@ -45,8 +47,12 @@ hiamsApp.controller('profileController', ['$http', 'clientsService', function ($
 		this.popup1.opened = true;
 	};
 
+	// this.setDate = function(year, month, day) {
+	// 	this.dob = new Date(year, month, day);
+	// };
+
 	this.setDate = function(year, month, day) {
-		this.dt = new Date(year, month, day);
+		this.dob = new Date(vm.client.dob);
 	};
 
 	this.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
@@ -54,10 +60,6 @@ hiamsApp.controller('profileController', ['$http', 'clientsService', function ($
 	this.altInputFormats = ['M!/d!/yyyy'];
 
 	this.popup1 = {
-		opened: false
-	};
-
-	this.popup2 = {
 		opened: false
 	};
 
@@ -93,21 +95,6 @@ hiamsApp.controller('profileController', ['$http', 'clientsService', function ($
 		return '';
 	};
 
-	// this.refresh = function(){
-	// 	//clientsService.query().$promise.then(function(response){
-	// 	clientsService.get().$promise.then(function(response){
-	// 		// console.log(response);
-	// 		//if(response.status === 200 && angular.isDefined(response.data))
-	// 		//{
-	// 			vm.client = response;
-	// 		//}	
-	// 	})
-	// 	.catch(function(response){
-	// 		console.log('Error: ' + response.data);
-	// 	});
-	// };
-
-
 	this.getLocation = function(val) {
     	return $http.get('//maps.googleapis.com/maps/api/geocode/json', {
 			params: {
@@ -116,9 +103,28 @@ hiamsApp.controller('profileController', ['$http', 'clientsService', function ($
 			}
     	}).then(function(response){
       		return response.data.results.map(function(item){
-      			//console.log(item.address_components);
-      			 //vm.address_component = item.address_components;
-      			 //vm.client.city = item.address_components[2].long_name;
+      			var result = _.find(item.address_components, function(address){
+      				return typeof _.find(address.types, function(a){
+      					return a === 'locality';
+      				}) === 'string';
+      			});
+
+      			vm.client.city = result.long_name;
+
+      			result = _.find(item.address_components, function(address){
+      				return typeof _.find(address.types, function(a){
+      					return a === 'administrative_area_level_1';
+      				}) === 'string';
+      			});
+      			vm.client.state = result.short_name;
+
+      			result = _.find(item.address_components, function(address){
+      				return typeof _.find(address.types, function(a){
+      					return a === 'postal_code';
+      				}) === 'string';
+      			});
+      			vm.client.zip = result.long_name;
+
        			 return item.formatted_address;
       			});
     		});
@@ -133,19 +139,8 @@ hiamsApp.controller('profileController', ['$http', 'clientsService', function ($
 	};
 
 
-	// // when submitting the add form, send the text to the node API
-	// vm.addClient = function() {
-	// 	clientsService.addClient(vm.client).then(function(response){
-	// 		vm.client = {};	
-	// 		vm.client = response.data;
-	// 	})
-	// 	.catch(function(response){
-	// 		console.log('Error: ' + response);
-	// 	});
-	// };
-
 	this.updateClient = function() {
-		// console.log(vm.client);
+		vm.client.dob = this.dob;
 		clientsService.update(vm.client).$promise.then(function(response){
 			//vm.client = {};	
 			//vm.client = response.data;
@@ -154,17 +149,6 @@ hiamsApp.controller('profileController', ['$http', 'clientsService', function ($
 			console.log('Error: ' + response);
 		});
 	};
-
-	// // delete a todo after checking it
-	// vm.deleteClient= function(id) {
-	// 	clientsService.deleteClient().then(function(response){
-	// 		vm.client = {};	
-	// 	})
-	// 	.catch(function(response){
-	// 		console.log('Error: ' + response);
-	// 	});
-	// };
-
 
 }]);
 

@@ -1,6 +1,20 @@
-<h4>In Component</h4>
-  <ul>
-  	<li ng-repeat="client in $ctrl.allClients">
-  			{{client.firstName}}
-  	</li>
-  </ul>
+<h4>Rolodex</h4>
+	<div class="row">
+		<div class="col-xs-12 col-sm-6">
+			<div class="left-nav">
+				<div uib-accordion close-others="true">
+					<div uib-accordion-group class="panel-default" is-open="isopen" ng-repeat="letter in $ctrl.rolodex">
+						<div uib-accordion-heading>{{letter.letter}}
+							<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isopen, 'glyphicon-chevron-right': !isopen}"></i>
+						</div uib-accordion-heading>
+						<div ng-repeat="client in letter.clients">
+							<a ui-sref-active="active" ui-sref=".client({ clientId: client._id })">{{client.firstName}}</a>
+		 				</div>
+					</div uib-accordion-group>
+				</div uib-accordion>
+			</div>
+		</div>
+		<div class="col=col-xs-12 col-sm-6">
+			<ui-view></ui-view>
+		</div>
+	</div>
