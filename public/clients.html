@@ -3,7 +3,7 @@
 		<div class="col-xs-12 col-sm-6">
 			<div class="left-nav">
 				<div uib-accordion close-others="true">
-					<div uib-accordion-group class="panel-default" is-open="isopen" ng-repeat="letter in $ctrl.rolodex">
+					<div uib-accordion-group class="panel-default" is-open="isopen" ng-repeat="letter in $ctrl.rolodex.data">
 						<div uib-accordion-heading>{{letter.letter}}
 							<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isopen, 'glyphicon-chevron-right': !isopen}"></i>
 						</div uib-accordion-heading>

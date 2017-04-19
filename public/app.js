@@ -199,9 +199,7 @@ hiamsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$
 			component: 'clients',
 			resolve: {
 				        rolodex : function(clientsService) {
-				            return clientsService.query().$promise.then(function(response){
-				            	return response.data;
-				            });
+				            return clientsService.query().$promise;
 				        }
 
 				    }
@@ -210,9 +208,19 @@ hiamsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$
 			component: 'client',
 				resolve: {
 						client : function(rolodex, $stateParams, _){
-							var v =  _.filter(rolodex, {clients: [{_id: $stateParams.clientId}]});
-							console.log(v[0].clients[0]);
-							return v[0].clients[0];
+										//var deferred = $q.defer();
+										 var v =  _.filter(rolodex.data, {clients: [{_id: $stateParams.clientId}]});
+
+										 var m = _.pick(rolodex.data.clients, 'firstName');
+										 console.log(m);
+										return v;
+										// console.log(v.clients[0]);
+										// return v.clients[0];
+										// if (v !== null)
+										// 	deferred.resolve(v.clients[0]);
+										// else
+										// 	deferred.reject('Client not found!');
+										// return deferred;
 						}
 				}
 		});
