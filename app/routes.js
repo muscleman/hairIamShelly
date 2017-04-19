@@ -229,8 +229,6 @@ module.exports = function(app) {
 							};
 						})
 						.value();
-					
-				console.log(v);
 				res.json(v); // return all clients in JSON format
 			})
 			.catch(function(err){
