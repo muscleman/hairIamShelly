@@ -207,20 +207,20 @@ hiamsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$
 			url: '/{clientId}',
 			component: 'client',
 				resolve: {
-						client : function(rolodex, $stateParams, _){
-										//var deferred = $q.defer();
-										 var v =  _.filter(rolodex.data, {clients: [{_id: $stateParams.clientId}]});
+						client : function($q, rolodex, $transition$, _){
+										var deferred = $q.defer();
+										 
+										var result = _(rolodex.data).thru(function(col1){
+											return _.union(col1, _.map(col1, 'clients'));
+											})
+											.flatten()
+											.find({_id : $transition$.params().clientId});
 
-										 var m = _.pick(rolodex.data.clients, 'firstName');
-										 console.log(m);
-										return v;
-										// console.log(v.clients[0]);
-										// return v.clients[0];
-										// if (v !== null)
-										// 	deferred.resolve(v.clients[0]);
-										// else
-										// 	deferred.reject('Client not found!');
-										// return deferred;
+										if (result !== null)
+											deferred.resolve(result);
+										else
+											deferred.reject('Client not found!');
+										return deferred.promise;
 						}
 				}
 		});
@@ -228,3 +228,12 @@ hiamsApp.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$
 	
 	$locationProvider.html5Mode(true);
 }]);
+
+
+hiamsApp.run(function($state){
+	$state.defaultErrorHandler(function($error$){
+		console.log($error$);
+	});
+
+});
+
